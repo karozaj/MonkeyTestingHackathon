@@ -104,11 +104,9 @@ WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
             print(f" Wysyłam prompt do Gemini (preferencje: {user_prefs_text[:100]}...)")
             response = await self.model.generate_content_async(prompt)
             
-            # Parsuj odpowiedź
             response_text = response.text.strip()
             print(f" Otrzymano odpowiedź: {response_text[:200]}...")
             
-            # Usuń markdown code blocks jeśli są
             if response_text.startswith("```"):
                 response_text = re.sub(r'^```(?:json)?\n?', '', response_text)
                 response_text = re.sub(r'\n?```$', '', response_text)
@@ -117,20 +115,17 @@ WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
             rankings = result.get("rankings", [])
             reasons = result.get("reasons", {})
             
-            # Zbuduj nową listę eventów w kolejności od LLM
             reranked_events = []
             used_indices = set()
             
             for rank_num in rankings:
-                idx = rank_num - 1  # Konwersja z 1-based na 0-based
+                idx = rank_num - 1
                 if 0 <= idx < len(events_to_analyze) and idx not in used_indices:
                     event = events_to_analyze[idx]
-                    # Opcjonalnie: dodaj powód jako atrybut
                     event.llm_reason = reasons.get(str(rank_num), "")
                     reranked_events.append(event)
                     used_indices.add(idx)
             
-            # Dodaj pozostałe eventy które LLM pominął (zachowaj oryginalną kolejność)
             for i, event in enumerate(events_to_analyze):
                 if i not in used_indices and len(reranked_events) < top_k:
                     reranked_events.append(event)

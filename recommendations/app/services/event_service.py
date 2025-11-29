@@ -222,5 +222,20 @@ class EventService:
         
         return events
 
+    async def delete_event(self, event_id: str) -> bool:
+        """Usuwa wydarzenie z Qdrant"""
+        try:
+            self.client.delete(
+                collection_name=settings.EVENTS_COLLECTION,
+                points_selector=models.PointIdsList(
+                    points=[event_id]
+                )
+            )
+            print(f"[EVENT] 🗑️ Usunięto event: {event_id}")
+            return True
+        except Exception as e:
+            print(f"Błąd usuwania eventu: {e}")
+            return False
+
 
 event_service = EventService()

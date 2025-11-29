@@ -137,5 +137,15 @@ class UserService:
             print(f"Błąd aktualizacji embeddingu: {e}")
             return False
 
+    async def record_behavior(self, behavior) -> bool:
+        """Zapisuje zachowanie użytkownika (join, view, like, share)"""
+        try:
+            print(f"[USER] 📝 Zapisuję zachowanie: user={behavior.user_id}, event={behavior.event_id}, action={behavior.action_type}")
+            # TODO: W przyszłości można zapisywać do osobnej kolekcji dla analizy
+            return True
+        except Exception as e:
+            print(f"Błąd zapisywania zachowania: {e}")
+            return False
+
 
 user_service = UserService()
