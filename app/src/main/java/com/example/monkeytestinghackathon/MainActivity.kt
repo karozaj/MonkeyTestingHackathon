@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.monkeytestinghackathon.ui.theme.MonkeyTestingHackathonTheme
-import navigation.NavigationRoot
+import com.example.monkeytestinghackathon.navigation.NavigationRoot
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

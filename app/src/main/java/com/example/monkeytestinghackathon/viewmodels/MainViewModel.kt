@@ -1,6 +1,5 @@
-package viewmodels
+package com.example.monkeytestinghackathon.viewmodels
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
 class MainViewModel(): ViewModel() {

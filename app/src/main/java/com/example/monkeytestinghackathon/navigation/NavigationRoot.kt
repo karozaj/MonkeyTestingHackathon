@@ -1,4 +1,4 @@
-package navigation
+package com.example.monkeytestinghackathon.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,8 +10,8 @@ import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import kotlinx.serialization.Serializable
-import ui.views.LoginView
-import ui.views.MainView
+import com.example.monkeytestinghackathon.ui.views.LoginView
+import com.example.monkeytestinghackathon.ui.views.MainView
 
 object NavigationKeys{
     @Serializable
@@ -19,11 +19,6 @@ object NavigationKeys{
     @Serializable
     data object MainScreen: NavKey
 }
-//@Serializable
-//data object NoteListScreen: NavKey
-//
-//@Serializable
-//data class NoteDetailScreen(val id: Int): NavKey
 
 @Composable
 fun NavigationRoot(
