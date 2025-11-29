@@ -13,7 +13,7 @@ data class EventListViewState  constructor(
         CardGameEvent(
             title = "Sample Event",
             description = "This is a sample event description.",
-            category = EventType.CASUAL,
+            category = EventType.CASUAL_PLAY,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
             startTime = Date(0),
@@ -26,7 +26,7 @@ data class EventListViewState  constructor(
         CardGameEvent(
             title = "Sample Event",
             description = "This is a sample event description.",
-            category = EventType.CASUAL,
+            category = EventType.CASUAL_PLAY,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
             startTime = Date(0),
@@ -39,7 +39,7 @@ data class EventListViewState  constructor(
         CardGameEvent(
             title = "Sample Event",
             description = "This is a sample event description.",
-            category = EventType.CASUAL,
+            category = EventType.CASUAL_PLAY,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
             startTime = Date(0),

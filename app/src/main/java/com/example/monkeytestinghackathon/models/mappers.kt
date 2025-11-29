@@ -9,7 +9,7 @@ fun CardGameEventDTO.toCardGameEvent(): CardGameEvent {
         id = this.id,
         title = this.title,
         description = this.description,
-        category = EventType.eventTypeFromKey(this.category)?: EventType.CASUAL,
+        category = EventType.eventTypeFromKey(this.category)?: EventType.CASUAL_PLAY,
         location = Location.locationFromKey(this.location)?: Location.KATOWICE,
         gameType = CardGameTypes.gameTypesFromKey(this.gameType)?: CardGameTypes.FLESH_AND_BLOOD,
         startTime = stringToDate(this.startTime),
