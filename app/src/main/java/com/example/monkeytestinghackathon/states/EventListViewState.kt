@@ -5,6 +5,7 @@ import com.example.monkeytestinghackathon.models.CardGameTypes
 import com.example.monkeytestinghackathon.models.EventType
 import com.example.monkeytestinghackathon.models.Location
 import java.time.LocalDateTime
+import java.util.Date
 
 data class EventListViewState  constructor(
     val isLoading: Boolean = false,
@@ -15,12 +16,12 @@ data class EventListViewState  constructor(
             category = EventType.CASUAL,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
-            startTime = LocalDateTime.now(),
-            endTime =  LocalDateTime.now(),
+            startTime = Date(0),
+            endTime =  Date(0),
             maxParticipants = 1,
             id = "",
             participantsCount = 0,
-            createdAt =  LocalDateTime.now(),
+            createdAt =  Date(0),
         ),
         CardGameEvent(
             title = "Sample Event",
@@ -28,12 +29,12 @@ data class EventListViewState  constructor(
             category = EventType.CASUAL,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
-            startTime = LocalDateTime.now(),
-            endTime =  LocalDateTime.now(),
+            startTime = Date(0),
+            endTime =  Date(0),
             maxParticipants = 1,
             id = "",
             participantsCount = 0,
-            createdAt =  LocalDateTime.now(),
+            createdAt =  Date(0),
         ),
         CardGameEvent(
             title = "Sample Event",
@@ -41,12 +42,12 @@ data class EventListViewState  constructor(
             category = EventType.CASUAL,
             location = Location.KATOWICE,
             gameType = CardGameTypes.FLESH_AND_BLOOD,
-            startTime = LocalDateTime.now(),
-            endTime =  LocalDateTime.now(),
+            startTime = Date(0),
+            endTime =  Date(0),
             maxParticipants = 1,
             id = "",
             participantsCount = 0,
-            createdAt =  LocalDateTime.now(),
+            createdAt =  Date(0),
         )
     ),
 

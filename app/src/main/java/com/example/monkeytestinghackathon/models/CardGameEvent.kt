@@ -1,6 +1,7 @@
 package com.example.monkeytestinghackathon.models
 
 import java.time.LocalDateTime
+import java.util.Date
 
 data class CardGameEvent(
     val title: String,
@@ -8,12 +9,12 @@ data class CardGameEvent(
     val category: EventType,
     val location: Location,
     val gameType: CardGameTypes,
-    val startTime: LocalDateTime,
-    val endTime: LocalDateTime,
+    val startTime: Date,
+    val endTime: Date,
     val maxParticipants: Int,
     val id: String,
     val participantsCount: Int,
-    val createdAt: LocalDateTime,
+    val createdAt: Date,
 )
 //@Serializable
 //data class CardGameEvent(
