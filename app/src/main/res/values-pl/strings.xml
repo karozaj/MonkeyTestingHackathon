@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">MonkeyTestingHackathon</string>
     <!-- Main list view -->
-    <string name="Add_event">Add event</string>
+    <string name="Add_event">Dodaj wydarzenie</string>
 </resources>
