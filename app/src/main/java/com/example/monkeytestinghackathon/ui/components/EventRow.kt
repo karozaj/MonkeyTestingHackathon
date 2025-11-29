@@ -61,8 +61,10 @@ fun EventRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(text = gameName +
-                        (if (location!=null) ", $location" else "") +
+                Text(text = gameName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis)
+                Text(text = (if (location!=null) "$location" else "") +
                         (if (date!=null) ", $date" else ""),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis)

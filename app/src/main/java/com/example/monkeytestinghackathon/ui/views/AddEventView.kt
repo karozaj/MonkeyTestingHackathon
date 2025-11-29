@@ -28,17 +28,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.app.subinfo.ui.components.popups.DatePickerModal
 import com.example.monkeytestinghackathon.models.CardGameTypes
 import com.example.monkeytestinghackathon.models.EventType
 import com.example.monkeytestinghackathon.models.Location
+import com.example.monkeytestinghackathon.viewmodels.AddEventViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEventView (){
+fun AddEventView (
+    viewModel: AddEventViewModel = koinViewModel()
+){
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    var gameDropdownExpanded: Boolean by remember { mutableStateOf(true) }
+    var gameDropdownExpanded: Boolean by remember { mutableStateOf(false) }
     var eventTypeDropdownExpanded: Boolean by remember { mutableStateOf(false)}
     var locationDropdownExpanded: Boolean by remember { mutableStateOf(false)}
+
+    var datePickerVisible: Boolean by remember { mutableStateOf(false) }
 
     fun expandDropdown(
         gameDropdown: Boolean = false,
@@ -63,29 +72,27 @@ fun AddEventView (){
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
                     Column(Modifier.padding(8.dp)) {
+                        //title
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
-                            value = "Tytuł",
-                            onValueChange = {},
-                            label = { Text("Event Name") },
+                            value = state.title,
+                            onValueChange = {
+                                viewModel.updateTitle(it)
+                            },
+                            label = { Text("Event title") },
                         )
+                        //description
                         DefaultSpacer()
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
-                            value = "Opis",
-                            onValueChange = {},
-                            label = { Text("Event Name") },
+                            value = state.description,
+                            onValueChange = {
+                                viewModel.updateDescription(it)
+                            },
+                            minLines = 3,
+                            label = { Text("Event description") },
                         )
                         DefaultSpacer()
-
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth()
-                                .clickable(onClick = {expandDropdown(gameDropdown = true)}),
-                            value = "Opis",
-                            readOnly = true,
-                            onValueChange = {},
-                            label = { Text("Event Name") },
-                        )
 
                         //game
                         ExposedDropdownMenuBox(
@@ -94,11 +101,10 @@ fun AddEventView (){
                             onExpandedChange = { expandDropdown(gameDropdown = !gameDropdownExpanded) }
                         ) {
                             TextField(
-
-                                value = "test",
+                                value = state.gameType.value,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Select your nearest city") },
+                                label = { Text("Select the game") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = gameDropdownExpanded) },
                                 modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
@@ -108,9 +114,10 @@ fun AddEventView (){
                             ) {
                                 CardGameTypes.entries.forEach { game ->
                                     DropdownMenuItem(
-                                        text = { Text(game.name) },
+                                        text = { Text(game.value) },
                                         onClick = {
-
+                                            viewModel.updateGameType(game)
+                                            expandDropdown()
                                         }
                                     )
                                 }
@@ -124,11 +131,10 @@ fun AddEventView (){
                             onExpandedChange = { expandDropdown(eventTypeDropdown = !eventTypeDropdownExpanded) }
                         ) {
                             TextField(
-
-                                value = "test",
+                                value = state.category.value,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Select your nearest city") },
+                                label = { Text("Select event type") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = eventTypeDropdownExpanded) },
                                 modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
@@ -138,9 +144,10 @@ fun AddEventView (){
                             ) {
                                 EventType.entries.forEach { type ->
                                     DropdownMenuItem(
-                                        text = { Text(type.name) },
+                                        text = { Text(type.value) },
                                         onClick = {
-
+                                            viewModel.updateCategory(type)
+                                            expandDropdown()
                                         }
                                     )
                                 }
@@ -156,8 +163,7 @@ fun AddEventView (){
                             onExpandedChange = { expandDropdown(locationDropdown = !locationDropdownExpanded) }
                         ) {
                             TextField(
-
-                                value = "test",
+                                value = state.location.value,
                                 onValueChange = {},
                                 readOnly = true,
                                 label = { Text("Select your nearest city") },
@@ -170,27 +176,46 @@ fun AddEventView (){
                             ) {
                                 Location.entries.forEach { location ->
                                     DropdownMenuItem(
-                                        text = { Text(location.name) },
+                                        text = { Text(location.value) },
                                         onClick = {
-
+                                            viewModel.updateLocation(location)
+                                            expandDropdown()
                                         }
                                     )
                                 }
                             }
                         }
                         DefaultSpacer()
+                        //date
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = "Liczba miejsc",
-                            onValueChange = {},
-                            label = { Text("Event Name") },
+                            modifier = Modifier.fillMaxWidth().clickable(
+                                onClick = { datePickerVisible = true }
+                            ),
+                            readOnly = true,
+                            value = state.startTime.toString(),
+                            onValueChange = { viewModel.updateParticipantsString(it) },
+                            label = { Text("Liczba miejsc") },
                         )
                         DefaultSpacer()
+
+                        TextField(
+                            value = state.category.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Select event type") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        DefaultSpacer()
+
+                        //add button
                         Button(onClick = {},
                             modifier = Modifier.fillMaxWidth(),
+                            enabled = true,
                         ) {
                             Text("Add Event")
                         }
+                        //cancel button
                         DefaultSpacer()
                         Button(onClick = {},
                             modifier = Modifier.fillMaxWidth(),
@@ -202,6 +227,16 @@ fun AddEventView (){
             }
 
         }
+    }
+    if(datePickerVisible) {
+        DatePickerModal(
+            onDateSelected = { date ->
+                viewModel.updateStartTime(date)
+                datePickerVisible=false
+            },
+            onDismiss = {
+                datePickerVisible=false
+            })
     }
 }
 

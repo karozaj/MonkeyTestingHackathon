@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.monkeytestinghackathon"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -82,5 +82,7 @@ dependencies {
 
     implementation("io.ktor:ktor-client-core:3.3.2")
     implementation("io.ktor:ktor-client-cio:3.3.2")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 
 }
