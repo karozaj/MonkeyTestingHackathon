@@ -12,7 +12,20 @@
           "package_name": "com.example.monkeytestinghackathon"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "282979199996-0e8tctnplqt7pkvsm6944mriei1ioj56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.monkeytestinghackathon",
+            "certificate_hash": "39b275bcfa2da13e4728e77df3c124c14523239c"
+          }
+        },
+        {
+          "client_id": "282979199996-6t5ihcsjosk11vpbk30qcpms2lbkklde.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBTqDEp_Zk0FAbd5XRAZjxQQR_RwU7PtJM"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "282979199996-6t5ihcsjosk11vpbk30qcpms2lbkklde.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
