@@ -8,7 +8,6 @@ import com.example.monkeytestinghackathon.states.AddEventViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
 import java.util.Date
 
 class AddEventViewModel: ViewModel() {
@@ -18,8 +17,8 @@ class AddEventViewModel: ViewModel() {
     fun canAddEvent(): Boolean {
         val currentState = _state.value
         return currentState.title.isNotBlank() &&
-                currentState.description.isNotBlank() &&
                 currentState.maxParticipants > 0 && currentState.participantsString.toIntOrNull()!=null
+                && currentState.maxParticipants<=50
     }
 
     fun updateTitle(title: String) {
@@ -80,7 +79,7 @@ class AddEventViewModel: ViewModel() {
 
     fun updateParticipantsString(participantsString: String) {
         _state.update { it.copy(participantsString = participantsString) }
-        if(participantsString.toIntOrNull()!=null){
+        if(participantsString.toIntOrNull()!=null) {
             updateParticipantsCount(participantsString.toInt())
         }
     }

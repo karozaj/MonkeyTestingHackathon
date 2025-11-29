@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.subinfo.ui.components.popups.DatePickerModal
@@ -198,12 +200,17 @@ fun AddEventView (
                         )
                         DefaultSpacer()
 
-                        TextField(
-                            value = state.category.value,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Select event type") },
-                            modifier = Modifier.fillMaxWidth()
+                        // participants
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.participantsString,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            onValueChange = {
+                                viewModel.updateParticipantsString(it)
+                            },
+                            label = { Text("Maximum participants") },
                         )
 
                         DefaultSpacer()
@@ -211,7 +218,7 @@ fun AddEventView (
                         //add button
                         Button(onClick = {},
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = true,
+                            enabled = viewModel.canAddEvent(),
                         ) {
                             Text("Add Event")
                         }
