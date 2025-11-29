@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "282979199996",
+    "project_id": "meetyourdeck-hacakton",
+    "storage_bucket": "meetyourdeck-hacakton.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:282979199996:android:5b514a42cf77eee142a079",
+        "android_client_info": {
+          "package_name": "com.example.monkeytestinghackathon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTqDEp_Zk0FAbd5XRAZjxQQR_RwU7PtJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
