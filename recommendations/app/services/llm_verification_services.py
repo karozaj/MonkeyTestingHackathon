@@ -19,13 +19,17 @@ class LLMVerificationService:
     def _ensure_initialized(self):
         """Lazy initialization - inicjalizuj tylko gdy potrzebne"""
         if not self._initialized and settings.GEMINI_API_KEY:
+            print("Inicjalizacja Gemini API...")
             genai.configure(api_key=settings.GEMINI_API_KEY)
             self.model = genai.GenerativeModel('gemini-2.0-flash')
             self._initialized = True
+            print(" Gemini API zainicjalizowane")
     
     def is_available(self) -> bool:
         """Sprawdź czy LLM verification jest dostępne"""
-        return bool(settings.GEMINI_API_KEY) and settings.ENABLE_LLM_VERIFICATION
+        available = bool(settings.GEMINI_API_KEY) and settings.ENABLE_LLM_VERIFICATION
+        print(f"is_available: {available} (API_KEY: {'YES' if settings.GEMINI_API_KEY else 'NO'}, ENABLED: {settings.ENABLE_LLM_VERIFICATION})")
+        return available
     
     async def verify_and_rerank_events(
         self,
@@ -49,17 +53,20 @@ class LLMVerificationService:
             Lista eventów po re-rankingu LLM
         """
         if not events or not self.is_available():
+            print(f"[LLM] ⏭️ Pomijam LLM verification (events: {len(events) if events else 0}, available: {self.is_available()})")
             return events[:top_k]
         
         self._ensure_initialized()
         
         if not self.model:
+            print(" Model nie zainicjalizowany")
             return events[:top_k]
         
         try:
             # Przygotuj listę eventów dla LLM (max 20 dla kontekstu)
             events_to_analyze = events[:20]
-            
+            print(f"Analizuję {len(events_to_analyze)} eventów...")
+
             events_text = "\n".join([
                 f"{i+1}. [{e.id}] {e.title} | Kategoria: {e.category} | Gra: {e.game_type} | "
                 f"Lokalizacja: {e.location} | Opis: {e.description[:150]}..."
@@ -94,10 +101,12 @@ Zwróć TYLKO JSON w formacie:
 Zwróć maksymalnie {top_k} najlepszych wydarzeń.
 WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
 
+            print(f" Wysyłam prompt do Gemini (preferencje: {user_prefs_text[:100]}...)")
             response = await self.model.generate_content_async(prompt)
             
             # Parsuj odpowiedź
             response_text = response.text.strip()
+            print(f" Otrzymano odpowiedź: {response_text[:200]}...")
             
             # Usuń markdown code blocks jeśli są
             if response_text.startswith("```"):
@@ -126,13 +135,18 @@ WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
                 if i not in used_indices and len(reranked_events) < top_k:
                     reranked_events.append(event)
             
+            print(f" Re-ranking zakończony. Zwracam {len(reranked_events[:top_k])} eventów")
+            for i, e in enumerate(reranked_events[:top_k][:5]):
+                reason = reasons.get(str(rankings[i] if i < len(rankings) else 0), "")
+                print(f"[LLM]    {i+1}. {e.title} - {reason[:50]}")
+            
             return reranked_events[:top_k]
             
         except json.JSONDecodeError as e:
-            print(f"LLM zwrócił nieprawidłowy JSON: {e}")
+            print(f" Nieprawidłowy JSON: {e}")
             return events[:top_k]
         except Exception as e:
-            print(f"Błąd LLM verification: {e}")
+            print(f"[ Błąd verification: {e}")
             return events[:top_k]
 
 

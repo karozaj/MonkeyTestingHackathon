@@ -240,16 +240,25 @@ class RecommendationService:
         3. Zastosuj hybrid ranking
         4. (Opcjonalnie) Weryfikacja LLM
         """
+        print(f"\n{'='*50}")
+        print(f"[FEED] 🎯 Generowanie feedu dla user: {user_id}")
+        print(f"[FEED] 📋 Parametry: limit={limit}, offset={offset}, category={category_filter}, location={location_filter}, game_type={game_type_filter}")
         
         enable_llm = use_llm_verification if use_llm_verification is not None else settings.ENABLE_LLM_VERIFICATION
+        print(f"[FEED] 🤖 LLM verification: {'WŁĄCZONE' if enable_llm else 'WYŁĄCZONE'}")
         
         # 1. Pobierz embedding użytkownika
+        print(f"[FEED] 1️⃣ Pobieranie embeddingu użytkownika...")
         user_embedding = await self.get_user_embedding(user_id)
         
         if not user_embedding:
+            print(f"[FEED] ⚠️ Brak embeddingu - zwracam domyślny feed")
             return await self._get_default_feed(limit, offset, category_filter, location_filter, game_type_filter)
         
+        print(f"[FEED] ✅ Embedding pobrany (dim: {len(user_embedding)})")
+        
         # 2. Wyszukiwanie semantyczne
+        print(f"[FEED] 2️⃣ Wyszukiwanie semantyczne...")
         semantic_results = await self.semantic_search(
             query_vector=user_embedding,
             limit=limit + offset + 10,  # Pobierz więcej dla offsetu
@@ -257,14 +266,19 @@ class RecommendationService:
             location_filter=location_filter,
             game_type_filter=game_type_filter
         )
+        print(f"[FEED] ✅ Znaleziono {len(semantic_results)} eventów")
         
         # 3. Hybrid ranking
+        print(f"[FEED] 3️⃣ Hybrid ranking...")
         ranked_events = self.hybrid_ranking(semantic_results)
+        print(f"[FEED] ✅ Ranking zakończony ({len(ranked_events)} eventów)")
         
         # 4. LLM Verification (opcjonalne)
         if enable_llm and llm_verification_service.is_available():
+            print(f"[FEED] 4️⃣ LLM Verification...")
             user_prefs = await self.get_user_preferences(user_id)
             if user_prefs:
+                print(f"[FEED] 📝 Preferencje użytkownika: {user_prefs.get('description', '')[:50]}...")
                 ranked_events = await llm_verification_service.verify_and_rerank_events(
                     events=ranked_events,
                     user_description=user_prefs.get("description", ""),
@@ -272,10 +286,15 @@ class RecommendationService:
                     preferred_game_types=user_prefs.get("preferred_game_types", []),
                     top_k=limit + offset
                 )
+        else:
+            print(f"[FEED] ⏭️ Pomijam LLM verification")
         
         # Zastosuj offset i limit
         total = len(ranked_events)
         paginated_events = ranked_events[offset:offset + limit]
+        
+        print(f"[FEED] ✅ Zwracam {len(paginated_events)} eventów (total: {total})")
+        print(f"{'='*50}\n")
         
         return paginated_events, total
     

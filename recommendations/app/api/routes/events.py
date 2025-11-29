@@ -17,14 +17,16 @@ async def search_events(
     Wyszukuje wydarzenia z filtrami.
     """
     try:
-        events, total = await event_service.search_events(
-            category=category,  
-            location=location,
-            limit=limit,
-            offset=offset
+        events = await event_service.search_events(
+            query="",
+            category_filter=category,  
+            location_filter=location,
+            limit=limit + offset
         )
+        total = len(events)
+        paginated_events = events[offset:offset + limit]
         return EventSearchResponse(
-            events=events,
+            events=paginated_events,
             total=total,
             has_more=(offset + limit) < total
         )

@@ -119,16 +119,13 @@ class EventService:
     
     async def search_events(
         self,
-        query: str,
+        query: str = "",
         limit: int = 20,
         category_filter: Optional[str] = None,
         location_filter: Optional[str] = None,
         game_type_filter: Optional[str] = None
     ) -> list[EventResponse]:
-        """Wyszukuje eventy tekstowo"""
-        
-        # Generuj embedding dla zapytania
-        query_embedding = embedding_service.generate_embedding(query)
+        """Wyszukuje eventy tekstowo lub z filtrami"""
         
         # Buduj filtry
         must_conditions = []
@@ -159,14 +156,24 @@ class EventService:
         
         filter_conditions = models.Filter(must=must_conditions) if must_conditions else None
         
-        # Wyszukaj w Qdrant
-        results = self.client.query_points(
-            collection_name=settings.EVENTS_COLLECTION,
-            query=query_embedding,
-            limit=limit,
-            query_filter=filter_conditions,
-            with_payload=True
-        ).points
+        # Jeśli jest query - użyj wyszukiwania semantycznego
+        if query and query.strip():
+            query_embedding = embedding_service.generate_embedding(query)
+            results = self.client.query_points(
+                collection_name=settings.EVENTS_COLLECTION,
+                query=query_embedding,
+                limit=limit,
+                query_filter=filter_conditions,
+                with_payload=True
+            ).points
+        else:
+            # Bez query - użyj scroll z filtrami
+            results, _ = self.client.scroll(
+                collection_name=settings.EVENTS_COLLECTION,
+                scroll_filter=filter_conditions,
+                limit=limit,
+                with_payload=True
+            )
         
         # Konwertuj na EventResponse
         events = []
