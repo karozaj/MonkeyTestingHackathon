@@ -4,8 +4,9 @@ enum class EventType(
     val key: String,
     val value: String
 ) {
-    CASUAL("casual", "Casual"),
+    CASUAL_PLAY("casual", " Play"),
     LEAGUE("league", "League"),
+    EVENT("event", "Event"),
     TOURNAMENT("tournament", "Tournament");
 
     companion object {

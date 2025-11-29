@@ -13,6 +13,7 @@ import com.example.monkeytestinghackathon.ui.views.AddEventView
 import kotlinx.serialization.Serializable
 import com.example.monkeytestinghackathon.ui.views.LoginView
 import com.example.monkeytestinghackathon.ui.views.EventListView
+import com.example.monkeytestinghackathon.ui.views.RegisterUserView
 
 object NavigationKeys{
     @Serializable
@@ -23,13 +24,15 @@ object NavigationKeys{
     data class EventDetailScreen(val eventId: String): NavKey
     @Serializable
     data object AddEventScreen: NavKey
+    @Serializable
+    data object RegisterScreen: NavKey
 }
 
 @Composable
 fun NavigationRoot(
     modifier: Modifier = Modifier
 ) {
-    val backStack = rememberNavBackStack(NavigationKeys.LoginScreen)
+    val backStack = rememberNavBackStack(NavigationKeys.RegisterScreen) // Should be LoginScreen in final app
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -53,9 +56,7 @@ fun NavigationRoot(
                     NavEntry(
                         key = key,
                     ) {
-                        EventListView(
-                            onAddEventButtonClicked = { backStack.add(NavigationKeys.AddEventScreen) }
-                        )
+                        EventListView()
                     }
                 }
                 is NavigationKeys.AddEventScreen -> {
@@ -63,6 +64,13 @@ fun NavigationRoot(
                         key = key,
                     ) {
                          AddEventView()
+                    }
+                }
+                is NavigationKeys.RegisterScreen -> {
+                    NavEntry(
+                        key = key,
+                    ) {
+                        RegisterUserView()
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")
