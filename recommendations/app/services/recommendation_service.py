@@ -136,7 +136,9 @@ class RecommendationService:
         """Oblicza score na podstawie aktualności wydarzenia"""
         now = datetime.now()
         
-        # Wydarzenia w przeszłości mają score 0
+        if start_time.tzinfo is not None:
+            start_time = start_time.replace(tzinfo=None)
+        
         if start_time < now:
             return 0.0
         

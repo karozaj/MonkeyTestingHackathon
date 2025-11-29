@@ -65,6 +65,7 @@ class EventWithScore(EventResponse):
     recency_score: float
     popularity_score: float
     final_score: float
+    llm_reason: Optional[str] = None  # Powód rekomendacji od LLM
 
 
 # === User Schemas ===
