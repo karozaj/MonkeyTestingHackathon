@@ -1,0 +1,140 @@
+import google.generativeai as genai
+from typing import List, Dict, Any, Optional
+from app.core.config import settings
+from app.models.schemas import EventWithScore
+import json
+import re
+
+
+class LLMVerificationService:
+    """
+    Serwis do weryfikacji i re-rankingu eventów za pomocą Gemini API.
+    Używany jako opcjonalny krok po hybrid ranking.
+    """
+    
+    def __init__(self):
+        self._initialized = False
+        self.model = None
+    
+    def _ensure_initialized(self):
+        """Lazy initialization - inicjalizuj tylko gdy potrzebne"""
+        if not self._initialized and settings.GEMINI_API_KEY:
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            self.model = genai.GenerativeModel('gemini-2.0-flash')
+            self._initialized = True
+    
+    def is_available(self) -> bool:
+        """Sprawdź czy LLM verification jest dostępne"""
+        return bool(settings.GEMINI_API_KEY) and settings.ENABLE_LLM_VERIFICATION
+    
+    async def verify_and_rerank_events(
+        self,
+        events: List[EventWithScore],
+        user_description: str = "",
+        preferred_categories: List[str] = None,
+        preferred_game_types: List[str] = None,
+        top_k: int = 10
+    ) -> List[EventWithScore]:
+        """
+        Weryfikacja i re-ranking eventów za pomocą LLM.
+        
+        Args:
+            events: Lista eventów po hybrid ranking
+            user_description: Opis preferencji użytkownika
+            preferred_categories: Preferowane kategorie
+            preferred_game_types: Preferowane typy gier
+            top_k: Ile eventów zwrócić
+            
+        Returns:
+            Lista eventów po re-rankingu LLM
+        """
+        if not events or not self.is_available():
+            return events[:top_k]
+        
+        self._ensure_initialized()
+        
+        if not self.model:
+            return events[:top_k]
+        
+        try:
+            # Przygotuj listę eventów dla LLM (max 20 dla kontekstu)
+            events_to_analyze = events[:20]
+            
+            events_text = "\n".join([
+                f"{i+1}. [{e.id}] {e.title} | Kategoria: {e.category} | Gra: {e.game_type} | "
+                f"Lokalizacja: {e.location} | Opis: {e.description[:150]}..."
+                for i, e in enumerate(events_to_analyze)
+            ])
+            
+            # Preferencje użytkownika
+            prefs = []
+            if user_description:
+                prefs.append(f"Opis: {user_description}")
+            if preferred_categories:
+                prefs.append(f"Kategorie: {', '.join(preferred_categories)}")
+            if preferred_game_types:
+                prefs.append(f"Gry: {', '.join(preferred_game_types)}")
+            
+            user_prefs_text = "\n".join(prefs) if prefs else "Brak szczegółowych preferencji"
+            
+            prompt = f"""Jesteś ekspertem od rekomendacji wydarzeń dla graczy karcianki.
+
+PREFERENCJE UŻYTKOWNIKA:
+{user_prefs_text}
+
+WYDARZENIA DO OCENY:
+{events_text}
+
+ZADANIE:
+Przeanalizuj wydarzenia i zwróć ich numery (1-{len(events_to_analyze)}) posortowane od najlepiej dopasowanych do preferencji użytkownika.
+
+Zwróć TYLKO JSON w formacie:
+{{"rankings": [1, 5, 3, 2, 8, ...], "reasons": {{"1": "krótki powód", "5": "krótki powód"}}}}
+
+Zwróć maksymalnie {top_k} najlepszych wydarzeń.
+WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
+
+            response = await self.model.generate_content_async(prompt)
+            
+            # Parsuj odpowiedź
+            response_text = response.text.strip()
+            
+            # Usuń markdown code blocks jeśli są
+            if response_text.startswith("```"):
+                response_text = re.sub(r'^```(?:json)?\n?', '', response_text)
+                response_text = re.sub(r'\n?```$', '', response_text)
+            
+            result = json.loads(response_text)
+            rankings = result.get("rankings", [])
+            reasons = result.get("reasons", {})
+            
+            # Zbuduj nową listę eventów w kolejności od LLM
+            reranked_events = []
+            used_indices = set()
+            
+            for rank_num in rankings:
+                idx = rank_num - 1  # Konwersja z 1-based na 0-based
+                if 0 <= idx < len(events_to_analyze) and idx not in used_indices:
+                    event = events_to_analyze[idx]
+                    # Opcjonalnie: dodaj powód jako atrybut
+                    event.llm_reason = reasons.get(str(rank_num), "")
+                    reranked_events.append(event)
+                    used_indices.add(idx)
+            
+            # Dodaj pozostałe eventy które LLM pominął (zachowaj oryginalną kolejność)
+            for i, event in enumerate(events_to_analyze):
+                if i not in used_indices and len(reranked_events) < top_k:
+                    reranked_events.append(event)
+            
+            return reranked_events[:top_k]
+            
+        except json.JSONDecodeError as e:
+            print(f"LLM zwrócił nieprawidłowy JSON: {e}")
+            return events[:top_k]
+        except Exception as e:
+            print(f"Błąd LLM verification: {e}")
+            return events[:top_k]
+
+
+# Singleton instance
+llm_verification_service = LLMVerificationService()
