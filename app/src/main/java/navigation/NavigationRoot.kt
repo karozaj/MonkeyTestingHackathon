@@ -14,12 +14,11 @@ import ui.views.LoginView
 import ui.views.MainView
 
 object NavigationKeys{
-
+    @Serializable
+    data object LoginScreen: NavKey
+    @Serializable
+    data object MainScreen: NavKey
 }
-@Serializable
-data object LoginScreen: NavKey
-@Serializable
-data object MainScreen: NavKey
 //@Serializable
 //data object NoteListScreen: NavKey
 //
@@ -30,7 +29,7 @@ data object MainScreen: NavKey
 fun NavigationRoot(
     modifier: Modifier = Modifier
 ) {
-    val backStack = rememberNavBackStack(LoginScreen)
+    val backStack = rememberNavBackStack(NavigationKeys.LoginScreen)
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -41,21 +40,21 @@ fun NavigationRoot(
         ),
         entryProvider = { key ->
             when(key) {
-                is LoginScreen -> {
+                is NavigationKeys.LoginScreen -> {
                     NavEntry(
                         key = key,
                     ) {
                         LoginView(
-                            onButtonClick = { backStack.add(MainScreen) }
+                            onButtonClick = { backStack.add(NavigationKeys.MainScreen) }
                         )
                     }
                 }
-                is MainScreen -> {
+                is NavigationKeys.MainScreen -> {
                     NavEntry(
                         key = key,
                     ) {
                         MainView(
-                            onButtonClick = { backStack.add(LoginScreen) }
+                            onButtonClick = { backStack.add(NavigationKeys.LoginScreen) }
                         )
                     }
                 }
