@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -68,14 +67,14 @@ fun AddEventView (){
                             modifier = Modifier.fillMaxWidth(),
                             value = "Tytuł",
                             onValueChange = {},
-                            label = { androidx.compose.material3.Text("Event Name") },
+                            label = { Text("Event Name") },
                         )
                         DefaultSpacer()
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = "Opis",
                             onValueChange = {},
-                            label = { androidx.compose.material3.Text("Event Name") },
+                            label = { Text("Event Name") },
                         )
                         DefaultSpacer()
 
@@ -85,7 +84,7 @@ fun AddEventView (){
                             value = "Opis",
                             readOnly = true,
                             onValueChange = {},
-                            label = { androidx.compose.material3.Text("Event Name") },
+                            label = { Text("Event Name") },
                         )
 
                         //game

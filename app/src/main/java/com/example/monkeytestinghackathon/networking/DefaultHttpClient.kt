@@ -1,4 +1,7 @@
 package com.example.monkeytestinghackathon.networking
 
-class DefaultHttpClient {
+import io.ktor.client.HttpClient
+
+fun getDefaultHttpClient(): HttpClient{
+    return HttpClient()
 }
