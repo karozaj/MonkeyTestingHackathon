@@ -11,14 +11,18 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import kotlinx.serialization.Serializable
 import com.example.monkeytestinghackathon.ui.views.LoginView
-import com.example.monkeytestinghackathon.ui.views.MainView
+import com.example.monkeytestinghackathon.ui.views.EventListView
 import com.example.monkeytestinghackathon.ui.views.RegisterUserView
 
 object NavigationKeys{
     @Serializable
     data object LoginScreen: NavKey
     @Serializable
-    data object MainScreen: NavKey
+    data object EventListScreen: NavKey
+    @Serializable
+    data class EventDetailScreen(val eventId: String): NavKey
+    @Serializable
+    data object AddEventScreen: NavKey
     @Serializable
     data object RegisterScreen: NavKey
 }
@@ -43,15 +47,15 @@ fun NavigationRoot(
                         key = key,
                     ) {
                         LoginView(
-                            onButtonClick = { backStack.add(NavigationKeys.MainScreen) }
+                            onButtonClick = { backStack.add(NavigationKeys.EventListScreen) }
                         )
                     }
                 }
-                is NavigationKeys.MainScreen -> {
+                is NavigationKeys.EventListScreen -> {
                     NavEntry(
                         key = key,
                     ) {
-                        MainView(
+                        EventListView(
                             onButtonClick = { backStack.add(NavigationKeys.LoginScreen) }
                         )
                     }
