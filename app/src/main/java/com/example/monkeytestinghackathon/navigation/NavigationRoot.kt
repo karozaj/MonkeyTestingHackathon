@@ -12,19 +12,22 @@ import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
 import kotlinx.serialization.Serializable
 import com.example.monkeytestinghackathon.ui.views.LoginView
 import com.example.monkeytestinghackathon.ui.views.MainView
+import com.example.monkeytestinghackathon.ui.views.RegisterUserView
 
 object NavigationKeys{
     @Serializable
     data object LoginScreen: NavKey
     @Serializable
     data object MainScreen: NavKey
+    @Serializable
+    data object RegisterScreen: NavKey
 }
 
 @Composable
 fun NavigationRoot(
     modifier: Modifier = Modifier
 ) {
-    val backStack = rememberNavBackStack(NavigationKeys.LoginScreen)
+    val backStack = rememberNavBackStack(NavigationKeys.RegisterScreen) // Should be LoginScreen in final app
     NavDisplay(
         modifier = modifier,
         backStack = backStack,
@@ -51,6 +54,13 @@ fun NavigationRoot(
                         MainView(
                             onButtonClick = { backStack.add(NavigationKeys.LoginScreen) }
                         )
+                    }
+                }
+                is NavigationKeys.RegisterScreen -> {
+                    NavEntry(
+                        key = key,
+                    ) {
+                        RegisterUserView()
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")
