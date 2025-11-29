@@ -19,7 +19,8 @@ import com.example.monkeytestinghackathon.ui.components.EventRow
 
 @Composable
 fun EventListView(
-    onButtonClick: () -> Unit = { }
+    onAddEventButtonClicked: () -> Unit = { },
+    onEventClicked: (eventId: Int) -> Unit = { }
 ){
     Scaffold() { paddingValues ->
         Column(
@@ -42,7 +43,7 @@ fun EventListView(
                             "2025-11-29",
                             5,
                             6,
-                            onClick = {}
+                            onClick = {onEventClicked(it)}
                         )
                     }
 
@@ -50,7 +51,10 @@ fun EventListView(
 
                 Box(Modifier.fillMaxSize(),
                     contentAlignment = Alignment.BottomEnd){
-                    Button(onClick = {},
+                    // add event button
+                    Button(onClick = {
+                        onAddEventButtonClicked()
+                    },
                         modifier = Modifier.padding(16.dp)) {
                         Text(stringResource(R.string.Add_event))
                     }

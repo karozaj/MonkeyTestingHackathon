@@ -11,9 +11,9 @@ import com.example.monkeytestinghackathon.viewmodels.RegisterUserViewModel
 fun RegisterUserView(
     viewModel: RegisterUserViewModel,
 ) {
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .
-    ) { }
+//    Scaffold(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .
+//    ) { }
 }

@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.example.monkeytestinghackathon.ui.views.AddEventView
 import kotlinx.serialization.Serializable
 import com.example.monkeytestinghackathon.ui.views.LoginView
 import com.example.monkeytestinghackathon.ui.views.EventListView
@@ -53,8 +54,15 @@ fun NavigationRoot(
                         key = key,
                     ) {
                         EventListView(
-                            onButtonClick = { backStack.add(NavigationKeys.LoginScreen) }
+                            onAddEventButtonClicked = { backStack.add(NavigationKeys.AddEventScreen) }
                         )
+                    }
+                }
+                is NavigationKeys.AddEventScreen -> {
+                    NavEntry(
+                        key = key,
+                    ) {
+                         AddEventView()
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")
