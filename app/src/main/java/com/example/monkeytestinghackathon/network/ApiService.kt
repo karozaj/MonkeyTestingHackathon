@@ -4,6 +4,7 @@ import com.example.monkeytestinghackathon.models.CreateUserRequest
 import com.example.monkeytestinghackathon.models.Events
 import com.example.monkeytestinghackathon.models.EventsResponse
 import com.example.monkeytestinghackathon.models.FeedResponse
+import com.example.monkeytestinghackathon.models.GetUser
 import com.example.monkeytestinghackathon.models.JoinLeaveEvent
 import com.example.monkeytestinghackathon.models.OneEvent
 import retrofit2.Response
@@ -25,7 +26,7 @@ interface ApiService {
         @Query("location") location: String,
         @Query("limit") limit: Int = 20,
         @Query("offset") offset: Int = 0
-    ): Response<EventsResponse>
+    ): Response<FeedResponse>
 
 
     @GET("events/?category={category}&limit=20&offset=0")
@@ -48,5 +49,5 @@ interface ApiService {
     suspend fun createUser(@Body body: CreateUserRequest): Response<Unit>
 
     @GET("users/{user_id}")
-    suspend fun getUser(@Path("user_id") user_id: String): Response<CreateUserRequest>
+    suspend fun getUser(@Path("user_id") user_id: String): Response<GetUser>
 }

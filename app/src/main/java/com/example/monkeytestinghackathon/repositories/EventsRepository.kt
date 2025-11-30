@@ -18,7 +18,7 @@ class EventsRepository {
         return RetrofitInstance.api.getFeed(userId)
     }
 
-    suspend fun getEventsByLocalization(localization: String): Response<EventsResponse> {
+    suspend fun getEventsByLocalization(localization: String): Response<FeedResponse> {
         return RetrofitInstance.api.getEventsByLocalization(localization)
     }
 

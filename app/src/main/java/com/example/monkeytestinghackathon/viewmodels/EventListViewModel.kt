@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.monkeytestinghackathon.models.Events
-import com.example.monkeytestinghackathon.models.EventsResponse
 import com.example.monkeytestinghackathon.models.FeedResponse
 import com.example.monkeytestinghackathon.repositories.EventsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +15,7 @@ class EventListViewModel(): ViewModel() {
     val repo: EventsRepository = EventsRepository()
 
     private val _feedresponse = MutableStateFlow<List<FeedResponse>>(emptyList())
-    private val _eventsResponse = MutableStateFlow<List<EventsResponse>>(emptyList())
+    private val _eventsResponse = MutableStateFlow<List<FeedResponse>>(emptyList())
     private val _events = MutableStateFlow<List<Events>>(emptyList())
 
     val events: StateFlow<List<Events>> = _events
@@ -60,7 +59,7 @@ class EventListViewModel(): ViewModel() {
                 if (response.isSuccessful) {
                     val body = response.body()
                     _eventsResponse.value = body?.let { listOf(it) } ?: emptyList()
-                    _events.value = _feedresponse.value.firstOrNull()?.events ?: emptyList()
+                    _events.value = (_eventsResponse.value.firstOrNull()?.events ?: emptyList()) as List<Events>
                 } else {
                     _events.value = emptyList()
                     Log.e("EventListViewModel", "Error fetching events: ${response.code()}")
@@ -75,6 +74,7 @@ class EventListViewModel(): ViewModel() {
             _isLoading.value = false
         }
     }
+
 
 
 }

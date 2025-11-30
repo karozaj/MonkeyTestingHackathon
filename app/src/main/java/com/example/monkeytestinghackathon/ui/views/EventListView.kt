@@ -37,7 +37,7 @@ fun EventListView(
         viewModel.getEvents(userId)
     }
 
-    val events = viewModel.events.collectAsState()
+    var events = viewModel.events.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
 
     Scaffold { paddingValues ->
