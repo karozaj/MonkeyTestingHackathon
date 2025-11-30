@@ -1,6 +1,7 @@
 package com.example.monkeytestinghackathon.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.example.monkeytestinghackathon.models.Events
 import com.example.monkeytestinghackathon.models.EventsList
 import com.example.monkeytestinghackathon.models.FeedResponse
 import com.example.monkeytestinghackathon.repositories.EventsRepository
@@ -16,9 +17,9 @@ class EventListViewModel(): ViewModel() {
 
 
     private val _feedresponse = MutableStateFlow<List<FeedResponse>>(emptyList())
-    private val _events = MutableStateFlow<List<EventsList>>(emptyList())
+    private val _events = MutableStateFlow<List<Events>>(emptyList())
 
-    val events: StateFlow<List<EventsList>> = _events
+    val events: StateFlow<List<Events>> = _events
 
 
 

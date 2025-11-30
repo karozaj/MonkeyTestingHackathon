@@ -43,16 +43,6 @@ fun EventListView(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-
-            Box(Modifier.fillMaxSize()) {
-                if (isLoading.value) {
-                    Box(
-                        Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
                     LazyColumn(
                         Modifier.fillMaxWidth()
                     ) {
@@ -86,6 +76,6 @@ fun EventListView(
                     }
                 }
             }
-        }
-    }
+
+
 }

@@ -11,5 +11,10 @@ data class Events(
     val max_participants: Int? = null,
     val id: String,
     val participants_count: Int,
-    val created_at: String
+    val created_at: String,
+    val semantic_score: Double,
+    val recency_score: Double,
+    val popularity_score: Double,
+    val final_score: Double,
+    val llm_reason: String
 )
