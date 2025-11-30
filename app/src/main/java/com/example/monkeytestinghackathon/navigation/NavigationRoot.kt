@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import com.example.monkeytestinghackathon.models.Firebase_CredentialManager
 import com.example.monkeytestinghackathon.ui.views.AddEventView
+import com.example.monkeytestinghackathon.ui.views.EventDetailView
 import kotlinx.serialization.Serializable
 import com.example.monkeytestinghackathon.ui.views.LoginView
 import com.example.monkeytestinghackathon.ui.views.EventListView
@@ -104,6 +105,11 @@ fun NavigationRoot(
                                 backStack.add(NavigationKeys.EventListScreen(key.userId))
                             }
                         )
+                    }
+                }
+                is NavigationKeys.EventDetailScreen -> {
+                    NavEntry(key = key) {
+                        EventDetailView(key.eventId)
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")

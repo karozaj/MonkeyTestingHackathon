@@ -30,7 +30,7 @@ class Firebase_CredentialManager(
     private val googleIdOption: CredentialOption =
         GetGoogleIdOption.Builder()
             .setServerClientId(context.getString(R.string.web_client_id))
-            .setFilterByAuthorizedAccounts(true)
+            .setFilterByAuthorizedAccounts(false)
             .build()
 
     private val request: androidx.credentials.GetCredentialRequest =
