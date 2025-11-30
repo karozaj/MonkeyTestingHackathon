@@ -10,12 +10,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.monkeytestinghackathon.R
 import com.example.monkeytestinghackathon.ui.components.EventRow
 import com.example.monkeytestinghackathon.viewmodels.EventListViewModel
@@ -24,10 +24,19 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun EventListView(
     onAddEventButtonClicked: () -> Unit = { },
-    onEventClicked: (eventId: Int) -> Unit = { },
-    viewModel: EventListViewModel = koinViewModel()
+    onEventClicked: (eventId: String) -> Unit = { },
+    viewModel: EventListViewModel = koinViewModel(),
+    userId: String
 ){
-    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getEvents(userId)
+    }
+
+    val events = viewModel.events.collectAsState()
+
+
+
 
     Scaffold() { paddingValues ->
         Column(
@@ -41,18 +50,21 @@ fun EventListView(
                 LazyColumn(
                     Modifier.fillMaxWidth()
                 ) {
-                    items(state.eventsList.size){
-                        val event = state.eventsList[it]
+                    items(events.value.size) { index ->
+                        val event = events.value[index]
                         EventRow(
-                            index = it,
+                            index = index,
                             title = event.title,
-                            gameName = event.gameType.value,
-                            location = event.location.toString(),
-                            date = event.startTime.toString(),
-                            currentParticipants = event.participantsCount,
-                            maxParticipants = event.maxParticipants,
-                            onClick = {onEventClicked(it)}
+                            gameName = event.game_type,
+                            location = event.location,
+                            date = event.start_time,
+                            currentParticipants = event.participants_count,
+                            maxParticipants = event.max_participants?: 1,
+                            onClick = {
+                                onEventClicked(event.id)
+                            }
                         )
+
                     }
 
                 }

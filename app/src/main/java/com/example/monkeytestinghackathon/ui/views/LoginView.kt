@@ -12,12 +12,9 @@ import com.example.monkeytestinghackathon.viewmodels.LoginViewModel
 
 @Composable
 fun LoginView(
-    onButtonClick: () -> Unit = { },
     onGoogleSignInClick: () -> Unit = { },
     viewModel: LoginViewModel = koinViewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
 
     Scaffold { paddingValues ->
             Spacer(modifier = Modifier.height(16.dp))

@@ -23,7 +23,7 @@ class EventsClient {
             }
         }
 
-    val path = "http://192.168.3.113:8000/"
+    val path = "http://10.0.2.2:8000/"
 
     suspend fun getEventById(id: String): Result<CardGameEventDTO> = runCatching {
         val response = client.get(path+"api/v1/events/"+id)

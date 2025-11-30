@@ -25,7 +25,7 @@ object NavigationKeys{
     @Serializable
     data object LoginScreen: NavKey
     @Serializable
-    data object EventListScreen: NavKey
+    data class EventListScreen(val userId: String): NavKey
     @Serializable
     data class EventDetailScreen(val eventId: String): NavKey
     @Serializable
@@ -42,6 +42,7 @@ fun NavigationRoot(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val credentialManager = Firebase_CredentialManager(context)
+    var uid: String = ""
 
     NavDisplay(
         modifier = modifier,
@@ -56,7 +57,6 @@ fun NavigationRoot(
                 is NavigationKeys.LoginScreen -> {
                     NavEntry(key = key) {
                         LoginView(
-                            onButtonClick = { backStack.add(NavigationKeys.EventListScreen) },
                             onGoogleSignInClick = {
                                 scope.launch {
                                     val result = credentialManager.signIn()
@@ -66,7 +66,8 @@ fun NavigationRoot(
                                             "UID: ${result.data.userId}",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        backStack.add(NavigationKeys.RegisterScreen(result.data.userId))
+                                        uid = result.data.userId
+                                        backStack.add(NavigationKeys.RegisterScreen(uid))
                                     } else {
                                         Log.i("logowanie",result.errorMessage ?: "Logowanie nieudane")
                                         Toast.makeText(
@@ -82,7 +83,10 @@ fun NavigationRoot(
                 }
                 is NavigationKeys.EventListScreen -> {
                     NavEntry(key = key) {
-                        EventListView()
+                        EventListView(
+                            onAddEventButtonClicked = { backStack.add(NavigationKeys.AddEventScreen) },
+                            userId = uid
+                        )
                     }
                 }
                 is NavigationKeys.AddEventScreen -> {
@@ -94,7 +98,12 @@ fun NavigationRoot(
                 }
                 is NavigationKeys.RegisterScreen -> {
                     NavEntry(key = key) {
-                        RegisterUserView(userId = key.userId)
+                        RegisterUserView(
+                            userId = key.userId,
+                            onRegistrationComplete = {
+                                backStack.add(NavigationKeys.EventListScreen(key.userId))
+                            }
+                        )
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")

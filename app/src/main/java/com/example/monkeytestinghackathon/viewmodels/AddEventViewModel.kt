@@ -20,21 +20,21 @@ class AddEventViewModel: ViewModel() {
 
     val testReposit = EventsRepository()
 
-    fun test(){
-        viewModelScope.launch {
-           val result = testReposit.getEventById("0678aa4b-5ca2-4085-ba51-d1b7c8152a4e")
-            if(result==null) {
-                Log.i("EventsRepository", "Failed to convert dto")
-            }
-            else{
-                Log.i("EventsRepository", "Converted to successffully")
-            }
-        }
-    }
+//    fun test(){
+//        viewModelScope.launch {
+//           val result = testReposit.getEventById("0678aa4b-5ca2-4085-ba51-d1b7c8152a4e")
+//            if(result==null) {
+//                Log.i("EventsRepository", "Failed to convert dto")
+//            }
+//            else{
+//                Log.i("EventsRepository", "Converted to successffully")
+//            }
+//        }
+//    }
 
     fun canAddEvent(): Boolean {
         Log.i("TEST","canAddEvent called")
-        test()
+        //test()
         val currentState = _state.value
         return currentState.title.isNotBlank() &&
                 currentState.maxParticipants > 0 && currentState.participantsString.toIntOrNull()!=null

@@ -16,6 +16,7 @@ import com.example.monkeytestinghackathon.viewmodels.RegisterUserViewModel
 @Composable
 fun RegisterUserView(
     modifier: Modifier = Modifier,
+    onRegistrationComplete: () -> Unit = {},
     viewModel: RegisterUserViewModel = RegisterUserViewModel(),
     userId: String
 ) {
@@ -138,6 +139,7 @@ fun RegisterUserView(
                         onComplete = {
                             successState = it
                             registering = false
+                            onRegistrationComplete()
                         }
                     )
                 }
