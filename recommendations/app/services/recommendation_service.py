@@ -22,9 +22,7 @@ class RecommendationService:
         self.client = get_qdrant_client()
     
     async def get_user_embedding(self, user_id: str) -> Optional[list[float]]:
-        """Pobiera embedding użytkownika z Qdrant po user_id w payload"""
         try:
-            # Szukaj po user_id w payload
             results = self.client.scroll(
                 collection_name=settings.USERS_COLLECTION,
                 scroll_filter=models.Filter(
@@ -45,7 +43,6 @@ class RecommendationService:
         return None
     
     async def get_user_preferences(self, user_id: str) -> Optional[dict]:
-        """Pobiera preferencje użytkownika z Qdrant """
         try:
             results = self.client.scroll(
                 collection_name=settings.USERS_COLLECTION,

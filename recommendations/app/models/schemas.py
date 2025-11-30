@@ -41,7 +41,7 @@ class EventBase(BaseModel):
     description: str
     category: str
     location: str
-    game_type: str  # Pokemon, MTG, Lorcana, Yu-Gi-Oh, LoL, etc.
+    game_type: str  
     start_time: datetime
     end_time: Optional[datetime] = None
     max_participants: Optional[int] = None
@@ -65,7 +65,7 @@ class EventWithScore(EventResponse):
     recency_score: float
     popularity_score: float
     final_score: float
-    llm_reason: Optional[str] = None  # Powód rekomendacji od LLM
+    llm_reason: Optional[str] = None
 
 
 # === User Schemas ===
@@ -73,9 +73,9 @@ class UserBase(BaseModel):
     user_id: str
     username: str
     location: LocationEnum
-    description: str = ""  # Opis użytkownika, np. "Bardziej social niż competitive, ważna jest atmosfera i ludzie"
+    description: str = ""  
     preferred_categories: list[str] = []
-    preferred_game_types: list[str] = []  # Pokemon, MTG, Lorcana, etc.
+    preferred_game_types: list[str] = [] 
 
 
 class UserCreate(UserBase):
@@ -94,7 +94,7 @@ class UserResponse(UserBase):
 class UserBehavior(BaseModel):
     user_id: str
     event_id: str
-    action_type: str  # "view", "like", "join", "share"
+    action_type: str 
     timestamp: datetime = datetime.now()
 
 
@@ -105,8 +105,8 @@ class FeedRequest(BaseModel):
     offset: int = 0
     category_filter: Optional[str] = None
     location_filter: Optional[str] = None
-    game_type_filter: Optional[str] = None  # Pokemon, MTG, Lorcana, etc.
-    use_llm_verification: Optional[bool] = None  # Włącz weryfikację LLM (domyślnie wg ustawień serwera)
+    game_type_filter: Optional[str] = None 
+    use_llm_verification: Optional[bool] = None  
 
 
 class FeedResponse(BaseModel):

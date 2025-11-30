@@ -13,11 +13,9 @@ class EventService:
         self.client = get_qdrant_client()
     
     async def create_event(self, event: EventCreate) -> EventResponse:
-        """Tworzy nowe wydarzenie i zapisuje embedding w Qdrant"""
         
         event_id = str(uuid4())
         created_at = datetime.now()
-          # Generuj embedding
         embedding = embedding_service.generate_event_embedding(
             title=event.title,
             description=event.description,
@@ -26,7 +24,6 @@ class EventService:
             game_type=event.game_type
         )
         
-        # Payload do Qdrant
         payload = {
             "title": event.title,
             "description": event.description,
@@ -40,7 +37,6 @@ class EventService:
             "created_at": created_at.isoformat()
         }
         
-        # Zapisz do Qdrant
         self.client.upsert(
             collection_name=settings.EVENTS_COLLECTION,
             points=[
@@ -67,7 +63,6 @@ class EventService:
         )
     
     async def get_event(self, event_id: str) -> EventResponse | None:
-        """Pobiera wydarzenie z Qdrant"""
         try:
             result = self.client.retrieve(
                 collection_name=settings.EVENTS_COLLECTION,
@@ -125,9 +120,7 @@ class EventService:
         location_filter: Optional[str] = None,
         game_type_filter: Optional[str] = None
     ) -> list[EventResponse]:
-        """Wyszukuje eventy tekstowo lub z filtrami"""
         
-        # Buduj filtry
         must_conditions = []
         
         if category_filter:
@@ -156,7 +149,6 @@ class EventService:
         
         filter_conditions = models.Filter(must=must_conditions) if must_conditions else None
         
-        # Jeśli jest query - użyj wyszukiwania semantycznego
         if query and query.strip():
             query_embedding = embedding_service.generate_embedding(query)
             results = self.client.query_points(
@@ -167,7 +159,6 @@ class EventService:
                 with_payload=True
             ).points
         else:
-            # Bez query - użyj scroll z filtrami
             results, _ = self.client.scroll(
                 collection_name=settings.EVENTS_COLLECTION,
                 scroll_filter=filter_conditions,
@@ -175,7 +166,6 @@ class EventService:
                 with_payload=True
             )
         
-        # Konwertuj na EventResponse
         events = []
         for hit in results:
             payload = hit.payload

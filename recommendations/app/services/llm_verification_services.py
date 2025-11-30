@@ -7,26 +7,19 @@ import re
 
 
 class LLMVerificationService:
-    """
-    Serwis do weryfikacji i re-rankingu eventów za pomocą Gemini API.
-    Używany jako opcjonalny krok po hybrid ranking.
-    """
+
     
     def __init__(self):
         self._initialized = False
         self.model = None
     
     def _ensure_initialized(self):
-        """Lazy initialization - inicjalizuj tylko gdy potrzebne"""
         if not self._initialized and settings.GEMINI_API_KEY:
-            print("Inicjalizacja Gemini API...")
             genai.configure(api_key=settings.GEMINI_API_KEY)
             self.model = genai.GenerativeModel('gemini-2.0-flash')
             self._initialized = True
-            print(" Gemini API zainicjalizowane")
     
     def is_available(self) -> bool:
-        """Sprawdź czy LLM verification jest dostępne"""
         available = bool(settings.GEMINI_API_KEY) and settings.ENABLE_LLM_VERIFICATION
         print(f"is_available: {available} (API_KEY: {'YES' if settings.GEMINI_API_KEY else 'NO'}, ENABLED: {settings.ENABLE_LLM_VERIFICATION})")
         return available
@@ -39,33 +32,17 @@ class LLMVerificationService:
         preferred_game_types: List[str] = None,
         top_k: int = 10
     ) -> List[EventWithScore]:
-        """
-        Weryfikacja i re-ranking eventów za pomocą LLM.
         
-        Args:
-            events: Lista eventów po hybrid ranking
-            user_description: Opis preferencji użytkownika
-            preferred_categories: Preferowane kategorie
-            preferred_game_types: Preferowane typy gier
-            top_k: Ile eventów zwrócić
-            
-        Returns:
-            Lista eventów po re-rankingu LLM
-        """
         if not events or not self.is_available():
-            print(f"Pomijam LLM verification (events: {len(events) if events else 0}, available: {self.is_available()})")
             return events[:top_k]
         
         self._ensure_initialized()
         
         if not self.model:
-            print(" Model nie zainicjalizowany")
             return events[:top_k]
         
         try:
-            # Przygotuj listę eventów dla LLM (max 20 dla kontekstu)
             events_to_analyze = events[:20]
-            print(f"Analizuję {len(events_to_analyze)} eventów...")
 
             events_text = "\n".join([
                 f"{i+1}. [{e.id}] {e.title} | Kategoria: {e.category} | Gra: {e.game_type} | "
@@ -73,7 +50,6 @@ class LLMVerificationService:
                 for i, e in enumerate(events_to_analyze)
             ])
             
-            # Preferencje użytkownika
             prefs = []
             if user_description:
                 prefs.append(f"Opis: {user_description}")
@@ -101,11 +77,9 @@ Zwróć TYLKO JSON w formacie:
 Zwróć maksymalnie {top_k} najlepszych wydarzeń.
 WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
 
-            print(f" Wysyłam prompt do Gemini (preferencje: {user_prefs_text[:100]}...)")
             response = await self.model.generate_content_async(prompt)
             
             response_text = response.text.strip()
-            print(f" Otrzymano odpowiedź: {response_text[:200]}...")
             
             if response_text.startswith("```"):
                 response_text = re.sub(r'^```(?:json)?\n?', '', response_text)

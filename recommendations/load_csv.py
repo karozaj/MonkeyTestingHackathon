@@ -4,7 +4,6 @@ import os
 import csv
 from datetime import datetime
 
-# Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.models.schemas import EventCreate, UserCreate, LocationEnum
@@ -20,7 +19,6 @@ def load_events_from_csv(file_path: str) -> list[dict]:
         reader = csv.DictReader(file)
         
         for row in reader:
-            # Use category as string directly
             category = row["category"].strip()
             
             event = {
@@ -45,17 +43,16 @@ def load_users_from_csv(file_path: str) -> list[dict]:
     with open(file_path, 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         
-        for row in reader:            # Parse description and preferred_categories
+        for row in reader:        
             description = row.get("description", "").strip()
             preferred_categories = [c.strip() for c in row["preferred_categories"].split(",")] if row.get("preferred_categories") else []
             preferred_game_types = [g.strip() for g in row["preferred_game_types"].split(",")] if row.get("preferred_game_types") else []
             
-            # Map location string to enum
             location_str = row["location"].strip() if row.get("location") else "Warsaw"
             try:
                 location = LocationEnum(location_str)
             except ValueError:
-                print(f"⚠️ Unknown location '{location_str}', defaulting to Warsaw")
+                print(f"Unknown location '{location_str}', defaulting to Warsaw")
                 location = LocationEnum.WARSAW
             
             user = {
@@ -72,10 +69,7 @@ def load_users_from_csv(file_path: str) -> list[dict]:
 
 
 async def seed_events_from_csv(csv_path: str):
-    """add point to qdrant"""
-    print(f"Loading events from: {csv_path}")
     if not os.path.exists(csv_path):
-        print(f"File: {csv_path}")
         return
     events_data = load_events_from_csv(csv_path)    
     event_service = EventService()
@@ -87,29 +81,21 @@ async def seed_events_from_csv(csv_path: str):
         try:
             event = EventCreate(**event_data)
             created_event = await event_service.create_event(event)
-            print(f"[{i}/{len(events_data)}] Created event: {created_event.title}")
             success_count += 1
         except Exception as e:
-            print(f" [{i}/{len(events_data)}] Failed: {event_data['title']} - {e}")
             fail_count += 1
     
-    print(f"\n  Events success: {success_count}")
-    print(f"  Events failed: {fail_count}")
+
     return success_count, fail_count
 
 
 async def seed_users_from_csv(csv_path: str):
-    """Seed Qdrant database with users from CSV file."""
-    print(f"\nLoading users from: {csv_path}")
     
     if not os.path.exists(csv_path):
-        print(f" File not found: {csv_path}")
         return
     
     users_data = load_users_from_csv(csv_path)
-    print(f"Found {len(users_data)} users in CSV\n")
     
-    # Create user service instance
     user_service = UserService()
     
     success_count = 0
@@ -119,19 +105,15 @@ async def seed_users_from_csv(csv_path: str):
         try:
             user = UserCreate(**user_data)
             created_user = await user_service.create_user(user)
-            print(f"[{i}/{len(users_data)}] Created user: {created_user.username}")
             success_count += 1
         except Exception as e:
-            print(f"[{i}/{len(users_data)}] Failed: {user_data['username']} - {e}")
             fail_count += 1
     
-    print(f"\n  Users success: {success_count}")
-    print(f"  Users failed: {fail_count}")
+   
     return success_count, fail_count
 
 
 async def seed_all():
-    """Seed both events and users from CSV files."""
     events_csv = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "event_data.csv"
@@ -140,19 +122,10 @@ async def seed_all():
         os.path.dirname(os.path.abspath(__file__)),
         "user_data.csv"
     )
-    
-    print(" Qdrant CSV Seeder")
-    print("=" * 50)
-    
-    # Seed events
     await seed_events_from_csv(events_csv)
     
-    # Seed users
     await seed_users_from_csv(users_csv)
-    
-    print("\n" + "=" * 50)
-    print(" Seeding complete!")
-
+ 
 
 if __name__ == "__main__":
     asyncio.run(seed_all())

@@ -9,15 +9,12 @@ import uuid
 
 
 class UserService:
-    """
-    Serwis zarządzający użytkownikami i ich embeddingami.
-    """
+
     
     def __init__(self):
         self.client = get_qdrant_client()
     
     async def create_user(self, user: UserCreate) -> UserResponse:
-        """Tworzy nowego użytkownika i generuje embedding na podstawie description"""
         
         user_embedding = embedding_service.generate_user_embedding(
             description=user.description,
@@ -60,7 +57,6 @@ class UserService:
         )
     
     async def get_user(self, user_id: str) -> Optional[UserResponse]:
-        """Pobiera dane użytkownika z Qdrant po user_id w payload"""
         try:
             results = self.client.scroll(
                 collection_name=settings.USERS_COLLECTION,
@@ -101,7 +97,6 @@ class UserService:
         description: str,
         preferred_categories: list[str]
     ) -> bool:
-        """Aktualizuje embedding użytkownika"""
         try:
             user = await self.get_user(user_id)
             if not user:
@@ -137,15 +132,6 @@ class UserService:
             print(f"Błąd aktualizacji embeddingu: {e}")
             return False
 
-    async def record_behavior(self, behavior) -> bool:
-        """Zapisuje zachowanie użytkownika (join, view, like, share)"""
-        try:
-            print(f"[USER] 📝 Zapisuję zachowanie: user={behavior.user_id}, event={behavior.event_id}, action={behavior.action_type}")
-            # TODO: W przyszłości można zapisywać do osobnej kolekcji dla analizy
-            return True
-        except Exception as e:
-            print(f"Błąd zapisywania zachowania: {e}")
-            return False
 
 
 user_service = UserService()

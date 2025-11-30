@@ -36,12 +36,10 @@ class QdrantManager:
                 )
                 print(f"Utworzono kolekcję: {collection_name}")
         
-        # Create payload indexes for filtering on events collection
         await self._create_payload_indexes()
     
     async def _create_payload_indexes(self):
         """Create payload indexes for filtering fields"""
-        # Indexes for events collection
         events_indexes = [
             ("category", models.PayloadSchemaType.KEYWORD),
             ("location", models.PayloadSchemaType.KEYWORD),
@@ -56,12 +54,9 @@ class QdrantManager:
                 )
                 print(f"Utworzono indeks dla pola: {field_name} w kolekcji {settings.EVENTS_COLLECTION}")
             except Exception as e:
-                # Index may already exist, which is fine
                 if "already exists" not in str(e).lower():
                     print(f"Uwaga przy tworzeniu indeksu {field_name}: {e}")
-        
-        # Indexes for users collection (location)
-        users_indexes = [
+                users_indexes = [
             ("location", models.PayloadSchemaType.KEYWORD),
         ]
         
