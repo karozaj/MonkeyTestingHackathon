@@ -25,7 +25,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun EventListView(
     onAddEventButtonClicked: () -> Unit = { },
-    onEventClicked: (eventId: String) -> Unit = { },
+    onEventClicked: (eventId: String, userId: String) -> Unit = {_,_ -> },
     viewModel: EventListViewModel = koinViewModel(),
     userId: String
 ){
@@ -67,7 +67,7 @@ fun EventListView(
                                 currentParticipants = event.participants_count,
                                 maxParticipants = event.max_participants ?: 1,
                                 onClick = {
-                                    onEventClicked(event.id)
+                                    onEventClicked(event.id, userId)
                                 }
                             )
                         }

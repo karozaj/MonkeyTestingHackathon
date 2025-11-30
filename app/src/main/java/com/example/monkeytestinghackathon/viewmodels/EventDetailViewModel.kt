@@ -2,14 +2,23 @@ package com.example.monkeytestinghackathon.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
 import com.example.monkeytestinghackathon.models.JoinLeaveEvent
 import com.example.monkeytestinghackathon.models.OneEvent
 import com.example.monkeytestinghackathon.repositories.EventsRepository
+import com.example.monkeytestinghackathon.states.EventDetailViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class EventDetailViewModel: ViewModel() {
     val repo: EventsRepository = EventsRepository()
+
+    private val _state = MutableStateFlow(EventDetailViewState())
+    val state = _state.asStateFlow()
 
     private val _event = MutableStateFlow<OneEvent>(OneEvent())
     val event: StateFlow<OneEvent> = _event
@@ -25,14 +34,23 @@ class EventDetailViewModel: ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading
 
 
-    suspend fun getEvent(eventId: String) {
+    fun updateEvent(newevent: OneEvent) {
+        _state.update {
+            it.copy(
+                event = newevent
+            )
+        }
+    }
+
+    suspend fun getEvent(eventId: String): OneEvent? {
         _isLoading.value = true
         try {
             val response = repo.getEvent(eventId)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body != null) {
-                    _event.value = body
+                    return body
+                    //_event.value = body
                 } else {
                     Log.e("EventDetailViewModel", "Error fetching event: response body is null")
                 }
@@ -43,7 +61,21 @@ class EventDetailViewModel: ViewModel() {
             Log.e("EventDetailViewModel", "Error fetching event", e)
 
         }
+        return null
         _isLoading.value = false
+    }
+
+    fun joinEventAsync(eventId: String, userId: String){
+        viewModelScope.launch {
+            joinEvent(eventId,userId)
+        }
+    }
+
+
+    fun leaveEventAsync(eventId: String, userId: String){
+        viewModelScope.launch {
+            leaveEvent(eventId,userId)
+        }
     }
 
     suspend fun joinEvent(eventId: String, userId: String) {

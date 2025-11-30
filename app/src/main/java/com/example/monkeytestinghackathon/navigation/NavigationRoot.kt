@@ -28,7 +28,7 @@ object NavigationKeys{
     @Serializable
     data class EventListScreen(val userId: String): NavKey
     @Serializable
-    data class EventDetailScreen(val eventId: String): NavKey
+    data class EventDetailScreen(val eventId: String, val userId: String): NavKey
     @Serializable
     data object AddEventScreen: NavKey
     @Serializable
@@ -85,6 +85,9 @@ fun NavigationRoot(
                 is NavigationKeys.EventListScreen -> {
                     NavEntry(key = key) {
                         EventListView(
+                            onEventClicked = { eventId, userId ->
+                                backStack.add(NavigationKeys.EventDetailScreen(eventId, userId))
+                            },
                             onAddEventButtonClicked = { backStack.add(NavigationKeys.AddEventScreen) },
                             userId = uid
                         )
@@ -112,7 +115,7 @@ fun NavigationRoot(
                 }
                 is NavigationKeys.EventDetailScreen -> {
                     NavEntry(key = key) {
-                        EventDetailView(key.eventId)
+                        EventDetailView(key.eventId, key.userId)
                     }
                 }
                 else -> throw RuntimeException("Invalid NavKey.")
