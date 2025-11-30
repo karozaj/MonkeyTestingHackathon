@@ -139,10 +139,8 @@ class RecommendationService:
         if start_time < now:
             return 0.0
         
-        # Im bliżej w czasie, tym wyższy score
         days_until = (start_time - now).days
         
-        # Exponential decay - wydarzenia w ciągu 7 dni mają najwyższy score
         score = math.exp(-days_until / 7)
         return min(1.0, max(0.0, score))
     
@@ -239,45 +237,29 @@ class RecommendationService:
         3. Zastosuj hybrid ranking
         4. (Opcjonalnie) Weryfikacja LLM
         """
-        print(f"\n{'='*50}")
-        print(f"[FEED] 🎯 Generowanie feedu dla user: {user_id}")
-        print(f"[FEED] 📋 Parametry: limit={limit}, offset={offset}, category={category_filter}, location={location_filter}, game_type={game_type_filter}")
+        
         
         enable_llm = use_llm_verification if use_llm_verification is not None else settings.ENABLE_LLM_VERIFICATION
-        print(f"[FEED] 🤖 LLM verification: {'WŁĄCZONE' if enable_llm else 'WYŁĄCZONE'}")
-        
-        # 1. Pobierz embedding użytkownika
-        print(f"[FEED] 1️⃣ Pobieranie embeddingu użytkownika...")
         user_embedding = await self.get_user_embedding(user_id)
         
         if not user_embedding:
-            print(f"[FEED] ⚠️ Brak embeddingu - zwracam domyślny feed")
             return await self._get_default_feed(limit, offset, category_filter, location_filter, game_type_filter)
         
-        print(f"[FEED] ✅ Embedding pobrany (dim: {len(user_embedding)})")
         
         # 2. Wyszukiwanie semantyczne
-        print(f"[FEED] 2️⃣ Wyszukiwanie semantyczne...")
         semantic_results = await self.semantic_search(
             query_vector=user_embedding,
-            limit=limit + offset + 10,  # Pobierz więcej dla offsetu
+            limit=limit + offset + 10,  
             category_filter=category_filter,
             location_filter=location_filter,
             game_type_filter=game_type_filter
         )
-        print(f"[FEED] ✅ Znaleziono {len(semantic_results)} eventów")
-        
-        # 3. Hybrid ranking
-        print(f"[FEED] 3️⃣ Hybrid ranking...")
+      
         ranked_events = self.hybrid_ranking(semantic_results)
-        print(f"[FEED] ✅ Ranking zakończony ({len(ranked_events)} eventów)")
         
-        # 4. LLM Verification (opcjonalne)
         if enable_llm and llm_verification_service.is_available():
-            print(f"[FEED] 4️⃣ LLM Verification...")
             user_prefs = await self.get_user_preferences(user_id)
             if user_prefs:
-                print(f"[FEED] 📝 Preferencje użytkownika: {user_prefs.get('description', '')[:50]}...")
                 ranked_events = await llm_verification_service.verify_and_rerank_events(
                     events=ranked_events,
                     user_description=user_prefs.get("description", ""),
@@ -286,14 +268,10 @@ class RecommendationService:
                     top_k=limit + offset
                 )
         else:
-            print(f"[FEED] ⏭️ Pomijam LLM verification")
-        
-        # Zastosuj offset i limit
+            print(f"LLM Verification wyłączony lub niedostępny.")
         total = len(ranked_events)
         paginated_events = ranked_events[offset:offset + limit]
         
-        print(f"[FEED] ✅ Zwracam {len(paginated_events)} eventów (total: {total})")
-        print(f"{'='*50}\n")
         
         return paginated_events, total
     
@@ -335,7 +313,6 @@ class RecommendationService:
         
         filter_conditions = models.Filter(must=must_conditions) if must_conditions else None
         
-        # Scroll wszystkie eventy
         results, _ = self.client.scroll(
             collection_name=settings.EVENTS_COLLECTION,
             scroll_filter=filter_conditions,
@@ -343,17 +320,15 @@ class RecommendationService:
             limit=100
         )
         
-        # Konwertuj na format dla hybrid ranking
         semantic_results = [
             {
                 "id": str(point.id),
-                "score": 0.5,  # Neutralny semantic score
+                "score": 0.5, 
                 "payload": point.payload
             }
             for point in results
         ]
         
-        # Hybrid ranking z większą wagą na popularność
         ranked_events = self.hybrid_ranking(
             semantic_results,
             semantic_weight=0.2,
