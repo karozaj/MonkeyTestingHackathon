@@ -51,10 +51,6 @@ API do rekomendacji wydarzeń karcianych (TCG) z wykorzystaniem Qdrant i opcjona
 
 ## 🚀 Uruchomienie
 
-### Docker Compose (zalecane)
-```bash
-docker-compose up --build
-```
 
 ### Lokalne uruchomienie
 
@@ -96,7 +92,7 @@ GET /api/v1/feed/{user_id}?limit=20&offset=0&category=tournament&location=Warsaw
 
 Parametry:
 - `limit` - liczba wyników (1-100, domyślnie 20)
-- `offset` - przesunięcie (domyślnie 0)
+- `offset` - przesunięcie (domyślnie 0) ile eventow ma dodatkowo zwracać
 - `category` - filtr kategorii (np. tournament, card_games)
 - `location` - filtr lokalizacji (np. Warsaw, Krakow)
 - `game_type` - filtr gry (np. Pokemon, MTG, Lorcana)
@@ -187,29 +183,6 @@ PUT  /api/v1/users/{id}/preferences      # Aktualizuj preferencje
 }
 ```
 
-## 📱 Przykład integracji z Android (Retrofit)
-
-```kotlin
-interface EventApi {
-    @GET("api/v1/feed/{userId}")
-    suspend fun getFeed(
-        @Path("userId") userId: String,
-        @Query("limit") limit: Int = 20,
-        @Query("offset") offset: Int = 0,
-        @Query("category") category: String? = null,
-        @Query("location") location: String? = null,
-        @Query("game_type") gameType: String? = null,
-        @Query("use_llm") useLlm: Boolean? = null
-    ): FeedResponse
-    
-    @POST("api/v1/events/{eventId}/join")
-    suspend fun joinEvent(
-        @Path("eventId") eventId: String,
-        @Query("user_id") userId: String
-    ): Response<Unit>
-}
-```
-
 ## 🧪 Testowanie
 
 ```bash
@@ -259,11 +232,4 @@ curl "http://localhost:8000/api/v1/events/?category=tournament&location=Warsaw"
 | `RECENCY_WEIGHT` | Waga świeżości | `0.3` |
 | `POPULARITY_WEIGHT` | Waga popularności | `0.2` |
 
-## 📦 Zależności
 
-- FastAPI 0.109.0
-- Uvicorn 0.27.0
-- Pydantic 2.5.3
-- Qdrant Client 1.7.0
-- Sentence Transformers 2.2.2
-- PyTorch 2.1.2
