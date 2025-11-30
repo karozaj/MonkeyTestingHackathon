@@ -1,9 +1,7 @@
 package com.example.monkeytestinghackathon.models
 
-import kotlinx.serialization.SerialName
-
 data class FeedResponse(
-    val events: List<Events>,
+    val events: List<EventsList>,
     val total: Int,
-     val has_more: Boolean
+    val has_more: Boolean
 )

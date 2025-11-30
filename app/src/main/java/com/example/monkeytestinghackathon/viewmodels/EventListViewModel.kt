@@ -1,16 +1,11 @@
 package com.example.monkeytestinghackathon.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.monkeytestinghackathon.models.Events
+import com.example.monkeytestinghackathon.models.EventsList
 import com.example.monkeytestinghackathon.models.FeedResponse
 import com.example.monkeytestinghackathon.repositories.EventsRepository
-import com.example.monkeytestinghackathon.states.EventListViewState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class EventListViewModel(): ViewModel() {
 
@@ -21,9 +16,9 @@ class EventListViewModel(): ViewModel() {
 
 
     private val _feedresponse = MutableStateFlow<List<FeedResponse>>(emptyList())
-    private val _events = MutableStateFlow<List<Events>>(emptyList())
+    private val _events = MutableStateFlow<List<EventsList>>(emptyList())
 
-    val events: StateFlow<List<Events>> = _events
+    val events: StateFlow<List<EventsList>> = _events
 
 
 
