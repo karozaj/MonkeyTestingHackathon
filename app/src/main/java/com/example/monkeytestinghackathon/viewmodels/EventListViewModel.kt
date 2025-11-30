@@ -12,10 +12,6 @@ class EventListViewModel(): ViewModel() {
 
     val repo: EventsRepository = EventsRepository()
 
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-
     private val _feedresponse = MutableStateFlow<List<FeedResponse>>(emptyList())
     private val _events = MutableStateFlow<List<Events>>(emptyList())
 
@@ -25,20 +21,19 @@ class EventListViewModel(): ViewModel() {
 
 
     suspend fun getEvents(userId: String) {
-        _isLoading.value = true
-        try {
-            val response = repo.getFeed(userId)
-            if (response.isSuccessful) {
-                val body = response.body()
-                _feedresponse.value = body?.let { listOf(it) } ?: emptyList()
-                _events.value = _feedresponse.value.firstOrNull()?.events ?: emptyList()
-            } else {
-                _events.value = emptyList()
+            try {
+                val response = repo.getFeed(userId)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    _feedresponse.value = if (body != null) listOf(body) else emptyList()
+                    for (item in _feedresponse.value) {
+                        _events.value = item.events
+                    }
+                } else {
+                    _feedresponse.value = emptyList()
+                }
+            } catch (e: Exception) {
+                _feedresponse.value = emptyList()
             }
-        } catch (e: Exception) {
-            _events.value = emptyList()
-        }
-        _isLoading.value = false
     }
-
 }
