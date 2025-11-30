@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MonkeyTestingHackathon</string>
+    <!-- Main list view -->
+    <string name="Add_event">Dodaj wydarzenie</string>
+    <string name="web_client_id">282979199996-6t5ihcsjosk11vpbk30qcpms2lbkklde.apps.googleusercontent.com</string>
+</resources>
