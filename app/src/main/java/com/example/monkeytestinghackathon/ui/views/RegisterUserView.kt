@@ -17,6 +17,7 @@ import com.example.monkeytestinghackathon.viewmodels.RegisterUserViewModel
 fun RegisterUserView(
     modifier: Modifier = Modifier,
     onRegistrationComplete: () -> Unit = {},
+    onSkip: () -> Unit = {},
     viewModel: RegisterUserViewModel = RegisterUserViewModel(),
     userId: String
 ) {
@@ -60,7 +61,8 @@ fun RegisterUserView(
             Text("Card games (multi-select)")
             Spacer(Modifier.height(8.dp))
             Button(onClick = { showGamesDialog = true }) {
-                val picked = if (selectedGames.isEmpty()) "Select games" else selectedGames.joinToString { it.value }
+                val picked =
+                    if (selectedGames.isEmpty()) "Select games" else selectedGames.joinToString { it.value }
                 Text(picked)
             }
             if (showGamesDialog) {
@@ -108,7 +110,8 @@ fun RegisterUserView(
             Spacer(Modifier.height(12.dp))
             Text("Preferred event types")
             Button(onClick = { showEventTypesDialog = true }) {
-                val picked = if (selectedEventTypes.isEmpty()) "Select event types" else selectedEventTypes.joinToString { it.value }
+                val picked =
+                    if (selectedEventTypes.isEmpty()) "Select event types" else selectedEventTypes.joinToString { it.value }
                 Text(picked)
             }
             if (showEventTypesDialog) {
@@ -148,7 +151,13 @@ fun RegisterUserView(
             }
             successState?.let {
                 Spacer(Modifier.height(12.dp))
-                Text(if (it) "Registration successful" else "Registration failed", color = if (it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error)
+                Text(
+                    if (it) "Registration successful" else "Registration failed",
+                    color = if (it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                )
+            }
+            Button(onClick = { onSkip() }) {
+                Text("Back to login")
             }
         }
     }

@@ -1,16 +1,20 @@
 package com.example.monkeytestinghackathon.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,37 +46,59 @@ fun EventRow(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                enabled = index>0,
-                onClick = { onClick(index) }
-            )
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable(enabled = index > 0) { onClick(index) }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(12.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Text(text = title,
-                    fontWeight = FontWeight.Bold,
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = title,
                     style = Typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(text = gameName,
+
+                Text(
+                    text = gameName,
+                    style = Typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
-                Text(text = (if (location!=null) "$location" else "") +
-                        (if (date!=null) ", $date" else ""),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis)
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                val info = listOfNotNull(location, date).joinToString(", ")
+
+                if (info.isNotEmpty()) {
+                    Text(
+                        text = info,
+                        style = Typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
-            Text("$currentParticipants / $maxParticipants")
+
+            // Prawa strona – licznik uczestników
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    "$currentParticipants / $maxParticipants",
+                    style = Typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }

@@ -102,6 +102,9 @@ fun NavigationRoot(
                             userId = key.userId,
                             onRegistrationComplete = {
                                 backStack.add(NavigationKeys.EventListScreen(key.userId))
+                            },
+                            onSkip = {
+                                backStack.add(NavigationKeys.EventListScreen("usr_003"))
                             }
                         )
                     }
