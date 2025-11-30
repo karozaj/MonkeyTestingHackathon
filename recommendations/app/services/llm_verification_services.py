@@ -53,7 +53,7 @@ class LLMVerificationService:
             Lista eventów po re-rankingu LLM
         """
         if not events or not self.is_available():
-            print(f"[LLM] ⏭️ Pomijam LLM verification (events: {len(events) if events else 0}, available: {self.is_available()})")
+            print(f"Pomijam LLM verification (events: {len(events) if events else 0}, available: {self.is_available()})")
             return events[:top_k]
         
         self._ensure_initialized()
@@ -141,7 +141,7 @@ WAŻNE: Odpowiedz TYLKO JSON-em, bez dodatkowego tekstu."""
             print(f" Nieprawidłowy JSON: {e}")
             return events[:top_k]
         except Exception as e:
-            print(f"[ Błąd verification: {e}")
+            print(f"Błąd verification: {e}")
             return events[:top_k]
 
 
