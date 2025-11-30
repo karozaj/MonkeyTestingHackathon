@@ -1,6 +1,7 @@
 package com.example.monkeytestinghackathon.network
 
 import com.example.monkeytestinghackathon.models.CreateUserRequest
+import com.example.monkeytestinghackathon.models.EventCreation
 import com.example.monkeytestinghackathon.models.Events
 import com.example.monkeytestinghackathon.models.EventsResponse
 import com.example.monkeytestinghackathon.models.FeedResponse
@@ -29,8 +30,19 @@ interface ApiService {
     ): Response<FeedResponse>
 
 
-    @GET("events/?category={category}&limit=20&offset=0")
-    suspend fun getEventsByCategory(@Path("category") category: String): Response<FeedResponse>
+
+    @POST("events/")
+    suspend fun createEvents(@Body body: EventCreation): Response<Unit>
+
+
+
+    @GET("events/")
+    suspend fun getEventsByCategory(
+        @Query("category") category: String,
+        @Query("limit") limit: Int = 20,
+        @Query("offset") offset: Int = 0
+    ): Response<FeedResponse>
+
 
     @GET("events/?category={category}&location={localization}&limit=20&offset=0")
     suspend fun getEventsByLocalizationAndCategory(@Path("localization") localization: String, @Path("category") category: String): Response<FeedResponse>

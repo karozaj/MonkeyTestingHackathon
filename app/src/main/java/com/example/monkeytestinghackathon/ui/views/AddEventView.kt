@@ -81,7 +81,7 @@ fun AddEventView (
                             onValueChange = {
                                 viewModel.updateTitle(it)
                             },
-                            label = { Text("Event title") },
+                            label = { Text("Tytuł wydarzenia") },
                         )
                         //description
                         DefaultSpacer()
@@ -92,7 +92,7 @@ fun AddEventView (
                                 viewModel.updateDescription(it)
                             },
                             minLines = 3,
-                            label = { Text("Event description") },
+                            label = { Text("Opis wydarzenia") },
                         )
                         DefaultSpacer()
 
@@ -106,7 +106,7 @@ fun AddEventView (
                                 value = state.gameType.value,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Select the game") },
+                                label = { Text("Wybierz karciankę") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = gameDropdownExpanded) },
                                 modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
@@ -168,7 +168,7 @@ fun AddEventView (
                                 value = state.location.value,
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Select your nearest city") },
+                                label = { Text("Wybierz najbliższe miasto") },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationDropdownExpanded) },
                                 modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
@@ -210,24 +210,35 @@ fun AddEventView (
                             onValueChange = {
                                 viewModel.updateParticipantsString(it)
                             },
-                            label = { Text("Maximum participants") },
+                            label = { Text("Maksymalna ilość miejsc") },
                         )
 
                         DefaultSpacer()
 
                         //add button
-                        Button(onClick = {},
+                        Button(onClick = {
+                            viewModel.addEvent(
+                                title = state.title,
+                                description = state.description,
+                                category = state.category.key,
+                                location = state.location.value,
+                                gameType = state.gameType.key,
+                                startTime = state.startTime,
+                                endTime = state.endTime,
+                                maxParticipants = state.maxParticipants
+                            )
+                        },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = viewModel.canAddEvent(),
                         ) {
-                            Text("Add Event")
+                            Text("Dodaj wydarzenie")
                         }
                         //cancel button
                         DefaultSpacer()
                         Button(onClick = {},
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text("Cancel")
+                            Text("Anuluj")
                         }
                     }
                 }

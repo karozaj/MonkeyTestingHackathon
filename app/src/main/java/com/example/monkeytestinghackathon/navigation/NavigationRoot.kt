@@ -62,11 +62,6 @@ fun NavigationRoot(
                                 scope.launch {
                                     val result = credentialManager.signIn()
                                     if (result.errorMessage == null && result.data != null) {
-                                        Toast.makeText(
-                                            context,
-                                            "UID: ${result.data.userId}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
                                         uid = result.data.userId
                                         backStack.add(NavigationKeys.RegisterScreen(uid))
                                     } else {

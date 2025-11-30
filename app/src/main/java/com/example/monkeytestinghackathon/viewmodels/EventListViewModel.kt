@@ -51,11 +51,41 @@ class EventListViewModel(): ViewModel() {
         _isLoading.value = false
     }
 
+    fun getEventsFeed(userId: String) {
+        viewModelScope.launch {
+            getEvents(userId)
+        }
+    }
+
     fun getEventsByLocalization(localization: String) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response = repo.getEventsByLocalization(localization)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    _eventsResponse.value = body?.let { listOf(it) } ?: emptyList()
+                    _events.value = (_eventsResponse.value.firstOrNull()?.events ?: emptyList()) as List<Events>
+                } else {
+                    _events.value = emptyList()
+                    Log.e("EventListViewModel", "Error fetching events: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                _events.value = emptyList()
+                Log.e("EventListViewModel", "Error fetching events", e)
+            }
+            if (_events.value.isEmpty()) {
+                Log.d("EventListViewModel", "No events found")
+            }
+            _isLoading.value = false
+        }
+    }
+
+    fun getEventsByCategory(category: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = repo.getEventsByCategory(category)
                 if (response.isSuccessful) {
                     val body = response.body()
                     _eventsResponse.value = body?.let { listOf(it) } ?: emptyList()

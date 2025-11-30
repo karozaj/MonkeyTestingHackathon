@@ -65,12 +65,12 @@ fun <T> MultiSelectDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(tempSelection) }) {
-                Text("Confirm")
+                Text("Zatwierdź")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Decline")
+                Text("Anuluj")
             }
         }
     )

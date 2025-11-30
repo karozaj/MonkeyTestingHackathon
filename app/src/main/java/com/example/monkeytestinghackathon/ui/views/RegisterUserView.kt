@@ -45,37 +45,29 @@ fun RegisterUserView(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // Title
             Text(
-                "Create your profile",
+                "Stwórz swój profil",
                 style = MaterialTheme.typography.headlineSmall
             )
-
-            // Username
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("Username") },
+                label = { Text("Nazwa użytkownika") },
                 singleLine = true
             )
-
-            // Description
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Tell us something about you") },
+                label = { Text("Opowiedz nam o sobie!") },
                 minLines = 4,
             )
-
-            // --- GAMES SELECT ---
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Card games", style = MaterialTheme.typography.labelLarge)
+                Text("Gry karciane", style = MaterialTheme.typography.labelLarge)
 
                 Button(
                     onClick = { showGamesDialog = true },
@@ -83,7 +75,7 @@ fun RegisterUserView(
                 ) {
                     Text(
                         if (selectedGames.isEmpty())
-                            "Select games"
+                            "Wybierz gry"
                         else selectedGames.joinToString { it.value }
                     )
                 }
@@ -91,7 +83,7 @@ fun RegisterUserView(
 
             if (showGamesDialog) {
                 MultiSelectDialog(
-                    title = "Select Card Games",
+                    title = "Wybierz gry karciane",
                     allItems = CardGameTypes.entries.toList(),
                     initialSelection = selectedGames,
                     label = { it.value },
@@ -102,13 +94,11 @@ fun RegisterUserView(
                     onDismiss = { showGamesDialog = false }
                 )
             }
-
-            // --- LOCATION ---
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Location", style = MaterialTheme.typography.labelLarge)
+                Text("Lokalizacja", style = MaterialTheme.typography.labelLarge)
 
                 ExposedDropdownMenuBox(
                     expanded = locationExpanded,
@@ -121,7 +111,7 @@ fun RegisterUserView(
                         value = selectedLocation?.value ?: "",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Nearest city") },
+                        label = { Text("Najbliższe miasto") },
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded)
                         }
@@ -143,13 +133,11 @@ fun RegisterUserView(
                     }
                 }
             }
-
-            // --- EVENT TYPES ---
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Preferred event types", style = MaterialTheme.typography.labelLarge)
+                Text("Preferowane typy wydarzeń", style = MaterialTheme.typography.labelLarge)
 
                 Button(
                     onClick = { showEventTypesDialog = true },
@@ -157,7 +145,7 @@ fun RegisterUserView(
                 ) {
                     Text(
                         if (selectedEventTypes.isEmpty())
-                            "Select event types"
+                            "Wybierz typy wydarzenia"
                         else selectedEventTypes.joinToString { it.value }
                     )
                 }
@@ -165,7 +153,7 @@ fun RegisterUserView(
 
             if (showEventTypesDialog) {
                 MultiSelectDialog(
-                    title = "Select Event Types",
+                    title = "Wybierz typ wydarzenia",
                     allItems = EventType.entries.toList(),
                     initialSelection = selectedEventTypes,
                     label = { it.value },
@@ -176,8 +164,6 @@ fun RegisterUserView(
                     onDismiss = { showEventTypesDialog = false }
                 )
             }
-
-            // --- REGISTER BUTTON ---
             Button(
                 onClick = {
                     registering = true
@@ -198,22 +184,19 @@ fun RegisterUserView(
                 enabled = !registering && username.isNotBlank() && selectedLocation != null,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (registering) "Registering…" else "Create account")
+                Text(if (registering) "Rejestrowanie…" else "Stwórz konto")
             }
-
-            // --- SUCCESS MESSAGE ---
             successState?.let { success ->
                 Text(
-                    text = if (success) "Registration successful!" else "Registration failed.",
+                    text = if (success) "Rejestracja pomyślna!" else "Rejestracja zakończona niepowiedzniem.",
                     color = if (success) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.error
                 )
             }
 
-            // Skip
-            TextButton(onClick = onSkip) {
-                Text("Back to login")
-            }
+            //TextButton(onClick = onSkip) {
+                //Text("SKIP")
+            //}
         }
     }
 }
