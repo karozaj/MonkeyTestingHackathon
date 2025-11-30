@@ -16,5 +16,5 @@ data class Events(
     val recency_score: Double,
     val popularity_score: Double,
     val final_score: Double,
-    val llm_reason: String
+    val llm_reason: String?
 )

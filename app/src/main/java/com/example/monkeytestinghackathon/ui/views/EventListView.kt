@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,54 +35,58 @@ fun EventListView(
     }
 
     val events = viewModel.events.collectAsState()
+    val isLoading = viewModel.isLoading.collectAsState()
 
-
-
-
-    Scaffold() { paddingValues ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)){
+                .padding(paddingValues)
+        ) {
 
-            Box(
-                Modifier.fillMaxSize()
-            ) {
-                LazyColumn(
-                    Modifier.fillMaxWidth()
-                ) {
-                    items(events.value.size) { index ->
-                        val event = events.value[index]
-                        EventRow(
-                            index = index,
-                            title = event.title,
-                            gameName = event.game_type,
-                            location = event.location,
-                            date = event.start_time,
-                            currentParticipants = event.participants_count,
-                            maxParticipants = event.max_participants?: 1,
-                            onClick = {
-                                onEventClicked(event.id)
-                            }
-                        )
-
+            Box(Modifier.fillMaxSize()) {
+                if (isLoading.value) {
+                    Box(
+                        Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
-
+                } else {
+                    LazyColumn(
+                        Modifier.fillMaxWidth()
+                    ) {
+                        items(events.value.size) { index ->
+                            val event = events.value[index]
+                            EventRow(
+                                index = index,
+                                title = event.title,
+                                gameName = event.game_type,
+                                location = event.location,
+                                date = event.start_time,
+                                currentParticipants = event.participants_count,
+                                maxParticipants = event.max_participants ?: 1,
+                                onClick = {
+                                    onEventClicked(event.id)
+                                }
+                            )
+                        }
+                    }
                 }
 
-                Box(Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomEnd){
-                    // add event button
-                    Button(onClick = {
-                        onAddEventButtonClicked()
-                    },
-                        modifier = Modifier.padding(16.dp)) {
+                // Przycisk add event
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Button(
+                        onClick = { onAddEventButtonClicked() },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text(stringResource(R.string.Add_event))
                     }
                 }
             }
-
         }
     }
-
 }

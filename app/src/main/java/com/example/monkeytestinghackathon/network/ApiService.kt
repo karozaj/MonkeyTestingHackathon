@@ -2,7 +2,6 @@ package com.example.monkeytestinghackathon.network
 
 import com.example.monkeytestinghackathon.models.CreateUserRequest
 import com.example.monkeytestinghackathon.models.Events
-import com.example.monkeytestinghackathon.models.EventsList
 import com.example.monkeytestinghackathon.models.FeedResponse
 import retrofit2.Response
 import retrofit2.http.Body
