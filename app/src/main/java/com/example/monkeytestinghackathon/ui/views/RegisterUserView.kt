@@ -3,6 +3,7 @@ package com.example.monkeytestinghackathon.ui.views
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,50 +22,73 @@ fun RegisterUserView(
     viewModel: RegisterUserViewModel = RegisterUserViewModel(),
     userId: String
 ) {
-    var username by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var selectedGames by remember { mutableStateOf(setOf<CardGameTypes>()) }
+    var username by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var selectedGames by rememberSaveable { mutableStateOf(setOf<CardGameTypes>()) }
     var showGamesDialog by remember { mutableStateOf(false) }
+
     var locationExpanded by remember { mutableStateOf(false) }
-    var selectedLocation by remember { mutableStateOf<Location?>(null) }
-    var selectedEventTypes by remember { mutableStateOf(setOf<EventType>()) }
+    var selectedLocation by rememberSaveable { mutableStateOf<Location?>(null) }
+
+    var selectedEventTypes by rememberSaveable { mutableStateOf(setOf<EventType>()) }
     var showEventTypesDialog by remember { mutableStateOf(false) }
+
     var registering by remember { mutableStateOf(false) }
     var successState by remember { mutableStateOf<Boolean?>(null) }
 
-    Scaffold { paddingValues ->
+    Scaffold { padding ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
+                .padding(padding)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            // Title
+            Text(
+                "Create your profile",
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            // Username
             OutlinedTextField(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Username") },
                 singleLine = true
             )
-            Spacer(Modifier.height(12.dp))
+
+            // Description
             OutlinedTextField(
-                modifier = modifier
-                    .height(150.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Tell us something about you!") },
-                maxLines = Int.MAX_VALUE
+                label = { Text("Tell us something about you") },
+                minLines = 4,
             )
-            Spacer(Modifier.height(12.dp))
-            Text("Card games (multi-select)")
-            Spacer(Modifier.height(8.dp))
-            Button(onClick = { showGamesDialog = true }) {
-                val picked =
-                    if (selectedGames.isEmpty()) "Select games" else selectedGames.joinToString { it.value }
-                Text(picked)
+
+            // --- GAMES SELECT ---
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Card games", style = MaterialTheme.typography.labelLarge)
+
+                Button(
+                    onClick = { showGamesDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (selectedGames.isEmpty())
+                            "Select games"
+                        else selectedGames.joinToString { it.value }
+                    )
+                }
             }
+
             if (showGamesDialog) {
                 MultiSelectDialog(
                     title = "Select Card Games",
@@ -78,42 +102,67 @@ fun RegisterUserView(
                     onDismiss = { showGamesDialog = false }
                 )
             }
-            Spacer(Modifier.height(12.dp))
-            Text("Localization")
-            ExposedDropdownMenuBox(
-                expanded = locationExpanded,
-                onExpandedChange = { locationExpanded = !locationExpanded }
+
+            // --- LOCATION ---
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                TextField(
-                    value = selectedLocation?.value ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Select your nearest city") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded) },
-                    modifier = Modifier.menuAnchor()
-                )
-                ExposedDropdownMenu(
+                Text("Location", style = MaterialTheme.typography.labelLarge)
+
+                ExposedDropdownMenuBox(
                     expanded = locationExpanded,
-                    onDismissRequest = { locationExpanded = false }
+                    onExpandedChange = { locationExpanded = !locationExpanded }
                 ) {
-                    Location.entries.forEach { loc ->
-                        DropdownMenuItem(
-                            text = { Text(loc.value) },
-                            onClick = {
-                                selectedLocation = loc
-                                locationExpanded = false
-                            }
-                        )
+                    TextField(
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        value = selectedLocation?.value ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Nearest city") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = locationExpanded)
+                        }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = locationExpanded,
+                        onDismissRequest = { locationExpanded = false }
+                    ) {
+                        Location.entries.forEach { loc ->
+                            DropdownMenuItem(
+                                text = { Text(loc.value) },
+                                onClick = {
+                                    selectedLocation = loc
+                                    locationExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
-            Spacer(Modifier.height(12.dp))
-            Text("Preferred event types")
-            Button(onClick = { showEventTypesDialog = true }) {
-                val picked =
-                    if (selectedEventTypes.isEmpty()) "Select event types" else selectedEventTypes.joinToString { it.value }
-                Text(picked)
+
+            // --- EVENT TYPES ---
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("Preferred event types", style = MaterialTheme.typography.labelLarge)
+
+                Button(
+                    onClick = { showEventTypesDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (selectedEventTypes.isEmpty())
+                            "Select event types"
+                        else selectedEventTypes.joinToString { it.value }
+                    )
+                }
             }
+
             if (showEventTypesDialog) {
                 MultiSelectDialog(
                     title = "Select Event Types",
@@ -127,15 +176,15 @@ fun RegisterUserView(
                     onDismiss = { showEventTypesDialog = false }
                 )
             }
-            Spacer(Modifier.height(16.dp))
+
+            // --- REGISTER BUTTON ---
             Button(
-                enabled = !registering && username.isNotBlank() && selectedLocation != null,
                 onClick = {
                     registering = true
                     viewModel.createUserAccount(
                         user_id = userId,
                         username = username,
-                        location = selectedLocation?.value ?: "",
+                        location = selectedLocation?.value.orEmpty(),
                         description = description,
                         preferred_categories = selectedEventTypes.map { it.value },
                         preferred_game_types = selectedGames.map { it.value },
@@ -145,20 +194,27 @@ fun RegisterUserView(
                             onRegistrationComplete()
                         }
                     )
-                }
+                },
+                enabled = !registering && username.isNotBlank() && selectedLocation != null,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (registering) "Registering..." else "Register")
+                Text(if (registering) "Registering…" else "Create account")
             }
-            successState?.let {
-                Spacer(Modifier.height(12.dp))
+
+            // --- SUCCESS MESSAGE ---
+            successState?.let { success ->
                 Text(
-                    if (it) "Registration successful" else "Registration failed",
-                    color = if (it) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    text = if (success) "Registration successful!" else "Registration failed.",
+                    color = if (success) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.error
                 )
             }
-            Button(onClick = { onSkip() }) {
+
+            // Skip
+            TextButton(onClick = onSkip) {
                 Text("Back to login")
             }
         }
     }
 }
+

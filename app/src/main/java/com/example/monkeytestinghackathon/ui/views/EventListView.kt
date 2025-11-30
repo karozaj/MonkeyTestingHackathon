@@ -1,13 +1,16 @@
 package com.example.monkeytestinghackathon.ui.views
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +44,25 @@ fun EventListView(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row() {
+                Button(
+                    onClick = {
+                        viewModel.getEventsByLocalization("Warszawa")
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text("Sort")
+                }
+                Text(
+                    "Select an event!",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+            }
 
             Box(Modifier.fillMaxSize()) {
                 if (isLoading.value) {
