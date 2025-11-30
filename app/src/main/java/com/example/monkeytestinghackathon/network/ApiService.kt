@@ -10,6 +10,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -21,11 +22,19 @@ interface ApiService {
     @GET("events/{event_id}")
     suspend fun getEvent(@Path("event_id") eventId: String): Response<OneEvent>
 
-    @POST("events/{event_id}/join?user_id={user_id}")
-    suspend fun joinEvent(@Path("event_id") eventId: String, @Path("user_id") userId: String): Response<JoinLeaveEvent>
+    @POST("events/{event_id}/join")
+    suspend fun joinEvent(
+        @Path("event_id") eventId: String,
+        @Query("user_id") userId: String
+    ): Response<JoinLeaveEvent>
 
-    @POST("events/{event_id}/leave?user_id={user_id}")
-    suspend fun leaveEvent(@Path("event_id") eventId: String, @Path("user_id") userId: String): Response<JoinLeaveEvent>
+
+    @POST("events/{event_id}/leave")
+    suspend fun leaveEvent(
+        @Path("event_id") eventId: String,
+        @Query("user_id") userId: String
+    ): Response<JoinLeaveEvent>
+
     //USER
     @POST("users/")
     suspend fun createUser(@Body body: CreateUserRequest): Response<Unit>
